@@ -1,0 +1,12 @@
+﻿  Source.cpp
+C:\Users\sande\source\repos\Book-Search\Login.h(17,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(62,32): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(63,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(64,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(65,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(66,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(183,32): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(184,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(185,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\sande\source\repos\Book-Search\Books.h(186,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  Book Seach.vcxproj -> C:\Users\sande\source\repos\Book-Search\x64\Debug\Book Seach.exe
