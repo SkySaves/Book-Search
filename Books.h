@@ -117,7 +117,7 @@ void displayAsPages(vector<Book> &books)
         }
 
         double pages = books.size() / PAGESIZE;
-        pages == 0 ? 1 : pages;
+        pages = pages == 0 ? 1 : pages;
 
         cout << "Page ["
              << page + 1
@@ -480,7 +480,7 @@ The displayList function is used to display all the books in the bookList.
 It outputs the ISBN, title, and author of each book in the bookList,
 and outputs the total number of books in the list.
 */
-// Moved around some things, no major changes -Zane
+// Points to displayAsPages now -Zane
 void displayList()
 {
     displayAsPages(bookList);

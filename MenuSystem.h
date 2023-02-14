@@ -1,5 +1,3 @@
-#ifndef MenuSystemHeader
-#define MenuSystemHeader
 
 #include <iostream>
 #include <string>
@@ -16,7 +14,6 @@ void saferCin(std::string &input)
     std::cin >> input;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
-
 void saferCin(int &input)
 {
     std::cin >> input;
@@ -94,5 +91,3 @@ public:
         }
     }
 };
-
-#endif

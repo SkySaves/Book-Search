@@ -72,25 +72,25 @@ void listHandler()
         int listChoice;
         listMenu.getChoice(listChoice);
 
-        if (listChoice == 0)
+        switch (listChoice)
         {
+        case 0:
             addToList();
-        }
-        else if (listChoice == 1)
-        {
-            removeFromList();
-        }
-        else if (listChoice == 2)
-        {
-            displayList();
-        }
-        else if (listChoice == 3)
-        {
             break;
-        }
-        else
-        {
-            std::cout << "Invalid choice. Try again." << endl;
+
+        case 1:
+            removeFromList();
+            break;
+
+        case 2:
+            displayList();
+            break;
+
+        case 3:
+            return;
+
+        default:
+            break;
         }
     }
 }
@@ -217,7 +217,6 @@ int main()
         case 1:
             addBookHandler();
             break;
-
         case 2:
             listHandler();
             break;
