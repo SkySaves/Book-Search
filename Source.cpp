@@ -5,8 +5,7 @@
 #include <cstdlib>
 #include "Login.h"
 #include "Books.h"
-#include <chrono>
-#include <thread>
+
 
 using namespace std;
 
@@ -58,10 +57,7 @@ int main() {
             cin >> choice;
 
             if (choice == 0) {
-                chrono::seconds duration(5);
-                this_thread::sleep_for(duration);
                 readBooks();
-                this_thread::sleep_for(duration);
             }
 
             // If the user chooses to search for a book
@@ -77,8 +73,6 @@ int main() {
                 // The function is inside a try-catch block to catch exceptions that may occur during its execution
                 try {
                     searchBooks(search);
-                    chrono::seconds duration(5);
-                    this_thread::sleep_for(duration);
                 }
                 catch (const exception& e) {
                     // If an exception occurs, display an error message with the exception's description
