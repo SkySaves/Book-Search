@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="Books.h" />
     <ClInclude Include="Login.h" />
+    <ClInclude Include="MenuSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
