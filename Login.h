@@ -44,7 +44,7 @@ bool userLogin(string username, string password) {
 
 	return result;
 }
-
+//This function takes in the username and password from the user and checks if the user exists in the database, then returns true or false.
 bool adminLogin(string adminUsername, string adminPassword) {
 	sqlite3* db;
 	sqlite3_stmt* stmt;
@@ -57,16 +57,15 @@ bool adminLogin(string adminUsername, string adminPassword) {
 	}
 
 	// Prepare the SELECT statement
-	string sql = "SELECT AdminID FROM adminLogin WHERE Username = ? AND Password = ?";
-	rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+	string sql = "SELECT Username, Password FROM adminLogin WHERE Username = ? AND Password = ?";
 
+	rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
 
 	// Bind the parameters to the statement
 	rc = sqlite3_bind_text(stmt, 1, adminUsername.c_str(), -1, SQLITE_TRANSIENT);
 	rc = sqlite3_bind_text(stmt, 2, adminPassword.c_str(), -1, SQLITE_TRANSIENT);
 
-
-	// Execute the statement. This will verify if the admin exist or not.
+	// Execute the statement. This will verify if the admin exists or not.
 	rc = sqlite3_step(stmt);
 	bool result = false;
 	if (rc == SQLITE_ROW) {
@@ -77,7 +76,6 @@ bool adminLogin(string adminUsername, string adminPassword) {
 
 	return result;
 }
-
 
 
 

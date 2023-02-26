@@ -13,10 +13,18 @@
 #include "sqlite3.h"
 #include <tuple>
 #include "Login.h"
+#include "Shoppers.h"
+#include "SaferCIN.h"
+#include "ListFunctions.h"
 
 
 
 using namespace std;
+
+
+
+
+
 
 
 /* ---------------- CLASSES ---------------- */
@@ -66,7 +74,7 @@ void readBooks()
         return;
     }
 
-    // Prepare the SELECT statement.
+    //  This code prepares a SQL SELECT statement to retrieve all rows and columns from a "books" table in a SQLite database, and handles any errors that occur during the preparation process.
     string sql = "SELECT * FROM books";
     rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
@@ -76,7 +84,7 @@ void readBooks()
         return;
     }
 
-    // Loop through the results of the SELECT statement and create Book objects.
+    // Loop through the results of the SELECT statement and create Book objects. This code retrieves the value of the first column of the current row of a SQLite SELECT statement result set and assigns it to the ISBN field of a book object. If the column value is null, an empty string is assigned to the ISBN field.
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         // A Book object to store the information of the book.
         Book book;
@@ -381,13 +389,18 @@ void displayAsPages(vector<Book>& books)
 
         // If no books were found, print a message to the user.
         if (books.empty()) {
+            char searchAgain;
             std::cout << "No books found matching the search criteria." << std::endl;
-            std::cout << "Press enter to continue..." << std::endl;
-            std::cin.get();
-            return;
+            std::cout << "Search again? y/n" << std::endl;
+            saferCin(searchAgain);
+            if (searchAgain == 'y') {
+				searchBooksHandler();
+			}
+            else {
+				return;
+			}
         }
-
-        // Display the books matching the search criteria.
+         //Display the books matching the search criteria.
         std::cout << "Books found:" << std::endl;
         std::cout << std::endl;
         for (int i = 0; i < books.size(); i++) {
@@ -405,13 +418,12 @@ void displayAsPages(vector<Book>& books)
         // Prompt the user to enter the ISBN of the book they want to buy or go back to the main menu.
         std::cout << "Enter the ISBN of the book you want to buy or type 'back' to go back to the main menu: ";
         std::string userChoice;
-        std::getline(std::cin, userChoice);
-        cin.ignore(); // add this line to clear any remaining input in the input stream buffer
+        saferCin(userChoice);
 
         // If the user chooses to go back to the main menu, return.
         if (userChoice == "back") {
             std::cout << "Returning to main menu..." << std::endl;
-            return;
+            displayMainMenu();
         }
 
         // Check if the entered ISBN is valid.
@@ -419,7 +431,12 @@ void displayAsPages(vector<Book>& books)
         for (int i = 0; i < books.size(); i++) {
             if (books[i].ISBN == userChoice) {
                 validISBN = true;
-                break;
+                addToList(books[i].ISBN);
+                cout << "Successfully added book to list!" << endl;
+                cout << "Press any key to return to the main menu." << endl;
+                system("pause");
+
+                displayMainMenu();
             }
         }
 
@@ -808,15 +825,6 @@ void choices()
 }
 
 
-// This function takes user input for the ISBN of the bookand returns the input ISBN.
-string getISBN()
-{
-    string ISBN;
-    cout << "Enter ISBN: ";
-    cin >> ISBN;
-    return ISBN;
-}
-
 
 
 
@@ -857,158 +865,6 @@ int searchBookIndex(string ISBN)
     sqlite3_close(db);
 
     return rowID;
-}
-
-
-
-// addToList is a function that adds books to the shoppingList table in the bookstore.db database.
-void addToList()
-{
-    // An infinite loop that prompts the user for the ISBN of a book and adds it to the shoppingList table if it is found.
-    while (true)
-    {
-        // Calls the getISBN function to get the ISBN of the book to be added to the list.
-        string ISBN = getISBN();
-
-        // Open the database
-        sqlite3* db;
-        int rc = sqlite3_open("bookstore.db", &db);
-        if (rc != SQLITE_OK) {
-            sqlite3_close(db);
-            std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
-            return;
-        }
-
-        // Prepare the SELECT statement
-
-        string sql = "SELECT * FROM books WHERE ISBN = ?;";
-        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
-        if (rc != SQLITE_OK) {
-            sqlite3_finalize(stmt);
-            sqlite3_close(db);
-            std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
-            return;
-        }
-
-        // Bind the parameter to the statement
-        rc = sqlite3_bind_text(stmt, 1, ISBN.c_str(), -1, SQLITE_TRANSIENT);
-
-        // Execute the statement and fetch results
-        if (sqlite3_step(stmt) == SQLITE_ROW) {
-            // Retrieve the values from the current row
-            string title(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)));
-            string author(reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)));
-            int MSRP = sqlite3_column_int(stmt, 3);
-
-            // Prepare the INSERT statement
-            string sql2 = "INSERT INTO shoppingList (ISBN, 'Book-Title', 'Book-Author', MSRP) VALUES (?, ?, ?, ?);";
-            sqlite3_stmt* stmt2;
-            rc = sqlite3_prepare_v2(db, sql2.c_str(), -1, &stmt2, nullptr);
-            if (rc != SQLITE_OK) {
-                sqlite3_finalize(stmt2);
-                sqlite3_close(db);
-                std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
-                return;
-            }
-
-            // Bind the parameters to the statement
-            rc = sqlite3_bind_text(stmt2, 1, ISBN.c_str(), -1, SQLITE_TRANSIENT);
-            rc = sqlite3_bind_text(stmt2, 2, title.c_str(), -1, SQLITE_TRANSIENT);
-            rc = sqlite3_bind_text(stmt2, 3, author.c_str(), -1, SQLITE_TRANSIENT);
-            rc = sqlite3_bind_int(stmt2, 4, MSRP);
-
-            // Execute the statement
-            rc = sqlite3_step(stmt2);
-
-            // Finalize the statements and close the database
-            sqlite3_finalize(stmt);
-            sqlite3_finalize(stmt2);
-            sqlite3_close(db);
-
-            cout << "Book added to list" << endl;
-        }
-        // If the book is not found, prompts the user to try again or exit.
-        else
-        {
-            cout << "Book not found" << endl;
-            cout << "Try again? (y/n): ";
-            char choice;
-            cin >> choice;
-            if (choice == 'n')
-            {
-                // Exits the function if the user chooses not to try again.
-                return;
-            }
-        }
-    }
-}
-
-
-
-
-
-void removeFromList()
-{
-    // Get the ISBN of the book to be removed from the user
-    string ISBN = getISBN();
-
-    // Open the database
-    sqlite3* db;
-    int rc = sqlite3_open("bookstore.db", &db);
-    if (rc != SQLITE_OK) {
-        sqlite3_close(db);
-        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
-        return;
-    }
-
-    // Prepare the DELETE statement
-
-    string sql = "DELETE FROM shoppingList WHERE ISBN = ?;";
-    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
-    if (rc != SQLITE_OK) {
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
-        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
-        return;
-    }
-
-    // Bind the ISBN parameter to the statement
-    rc = sqlite3_bind_text(stmt, 1, ISBN.c_str(), -1, SQLITE_TRANSIENT);
-
-    // Execute the statement and check for errors
-    rc = sqlite3_step(stmt);
-    if (rc != SQLITE_DONE) {
-        std::cerr << "Error deleting book from shopping list: " << sqlite3_errmsg(db) << std::endl;
-    }
-    else {
-        cout << "Book removed from list" << endl;
-    }
-
-    // Finalize the statement and close the database
-    sqlite3_finalize(stmt);
-    sqlite3_close(db);
-}
-
-
-
-
-// saferCin is a function that takes a string or int reference as an argument and prompts the user for input.
-// It uses the standard cin input stream to retrieve the input, but with the addition of ignoring any excess characters in the input buffer after the desired input has been retrieved.
-
-void saferCin(std::string& input)
-{
-    // Prompts the user for input and stores it in the input string reference.
-    std::cin >> input;
-    // Ignores any excess characters in the input buffer after the desired input has been retrieved.
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-}
-
-void saferCin(int& input)
-{
-    // Prompts the user for input and stores it in the input int reference.
-    std::cin >> input;
-    // Ignores any excess characters in the input buffer after the desired input has been retrieved.
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
 
@@ -1395,6 +1251,7 @@ void listHandler()
 void displayMainMenu() {
     std::string userChoice;
 
+
     while (true) {
         // Clears the console screen.
         system("cls");
@@ -1405,35 +1262,40 @@ void displayMainMenu() {
         std::cout << "1. Search for a book" << std::endl;
         std::cout << "2. Add a book to the shopping list" << std::endl;
         std::cout << "3. View the shopping list" << std::endl;
-        std::cout << "4. Display the book list" << std::endl;
+        std::cout << "4. Create a Shopper account" << std::endl;
         std::cout << "5. Exit" << std::endl;
         std::cout << "Enter your choice (1-5): ";
 
         // Get the user's input.
-        std::getline(std::cin, userChoice);
+        saferCin(userChoice);
 
         // Call the appropriate function based on the user's choice.
         if (userChoice == "1") {
             searchBookHandler();
+            std::cout << "Book search complete." << std::endl;
         }
         else if (userChoice == "2") {
             addBookHandler();
+            std::cout << "Book added to shopping list." << std::endl;
         }
         else if (userChoice == "3") {
             listHandler();
+            std::cout << "Shopping list displayed." << std::endl;
         }
         else if (userChoice == "4") {
-            displayList();
+            addShopperHandler();
+            std::cout << "Shopper account created." << std::endl;
         }
         else if (userChoice == "5") {
-            return;
+            break;
         }
         else {
             // Display an error message if the user's input is invalid.
             std::cout << "Invalid choice. Please enter a number from 1 to 5." << std::endl;
-            // Pause the program so the user can see the error message.
-            system("pause");
         }
+        // Pause the program so the user can see the result message.
+        std::cout << "Returning to the main menu. Press any key to continue...";
+        std::cin.get();
     }
 }
 
@@ -1449,27 +1311,51 @@ int authUserHandler()
     system("cls");
 
     // Declare variables to store the user's login information.
-    string username;
-    string password;
-    string tryAgain;
+    std::string username;
+    std::string password;
+    char tryAgain = 'y';
+    int retryCount = 0;
+    const int maxRetryCount = 3;
 
-    // Prompt the user to enter their login information and read the input safely.
-    std::cout << "Enter your username: ";
-    saferCin(username);
+    // Open the database connection.
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        exit(1);
+    }
 
-    std::cout << "Enter your password: ";
-    saferCin(password);
-
-    // Loop until the user enters valid login information.
-    while (true)
+    // Loop until the user enters valid login information or reaches the maximum number of retries.
+    while (tryAgain == 'y' && retryCount < maxRetryCount)
     {
-        // Check if the user's login information is valid for admin login.
-        if (adminLogin(username, password))
-        {
-            break;
+        // Prompt the user to enter their login information and read the input safely.
+        std::cout << "Enter your username: ";
+        saferCin(username);
+
+        std::cout << "Enter your password: ";
+        saferCin(password);
+
+
+
+        // Prepare the SELECT statement
+        std::string sql = "SELECT UserID FROM customerLogin WHERE Username = ? AND Password = ?";
+        sqlite3_stmt* stmt;
+        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+
+        // Bind the parameters to the statement
+        rc = sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+        rc = sqlite3_bind_text(stmt, 2, password.c_str(), -1, SQLITE_TRANSIENT);
+
+        // Execute the statement. This will verify if the user exists or not.
+        bool result = false;
+        if (sqlite3_step(stmt) == SQLITE_ROW) {
+            result = true;
         }
-        // Check if the user's login information is valid for customer login.
-        else if (userLogin(username, password))
+        sqlite3_finalize(stmt);
+
+        // If the user's login information is valid, exit the loop.
+        if (result)
         {
             break;
         }
@@ -1477,25 +1363,15 @@ int authUserHandler()
         {
             // If the user's login information is not valid, prompt them to try again or exit.
             std::cout << "Invalid login information. Try again? (y/n): " << std::endl;
-            saferCin(tryAgain);
+            std::cin >> tryAgain;
+            std::cin.ignore();
 
-            if (tryAgain == "y")
-            {
-                // If the user chooses to try again, prompt them to enter their login information again.
-                std::cout << "Enter your username: " << std::endl;
-                saferCin(username);
-
-                std::cout << "Enter your password: " << std::endl;
-                saferCin(password);
-            }
-            else
-            {
-                // If the user chooses to exit, exit the program.
-                exit(0);
-                return 0;
-            }
+            retryCount++;
         }
     }
+
+    // Close the database connection.
+    sqlite3_close(db);
 
     // If the user's login information is valid, return 1 to indicate success.
     // Note that this code assumes that the user's login information will always be valid if the while loop exits.
@@ -1528,7 +1404,7 @@ void registrationHandle() {
 
     // Prepare the INSERT statement.
     sqlite3_stmt* stmt;
-    string sql = "INSERT INTO customerLogin (Username, Password) VALUES (?, ?)";
+    string sql = "INSERT INTO customerLogin (Username, Password, UserID) VALUES (?, ?, NULL)";
     rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
     if (rc != SQLITE_OK) {
         // If the statement fails to prepare, print an error message, finalize the statement, close the database, and return.
@@ -1540,94 +1416,42 @@ void registrationHandle() {
 
     // Bind the parameters to the statement.
     rc = sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
+    if (rc != SQLITE_OK) {
+        // If the first parameter fails to bind, print an error message, finalize the statement, close the database, and return.
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error binding parameter 1: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
     rc = sqlite3_bind_text(stmt, 2, password.c_str(), -1, SQLITE_TRANSIENT);
+    if (rc != SQLITE_OK) {
+        // If the second parameter fails to bind, print an error message, finalize the statement, close the database, and return.
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error binding parameter 2: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
     // Execute the statement.
     rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        // If the statement fails to execute, print an error message, finalize the statement, close the database, and return.
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error executing statement: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
 
     // Finalize the statement and close the database.
     sqlite3_finalize(stmt);
     sqlite3_close(db);
 
     // Print a message to indicate that the registration is complete.
-    cout << "Registration complete!\n";
+    system("cls");
+    std::cout << "Registration complete!\n";
+
     return;
 }
-
-
-
-
-
-
-int adminLoginHandler()
-{
-    // Clear the console screen.
-    system("cls");
-
-    // Declare variables to store admin login information and a retry prompt.
-    string adminUsername;
-    string adminPassword;
-    string adminTryAgain;
-
-    // Prompt the user to enter their admin username and password, and read the input safely.
-    std::cout << "Enter admin username: ";
-    saferCin(adminUsername);
-    std::cout << "Enter admin password: ";
-    saferCin(adminPassword);
-
-    // Loop until the user enters valid admin login information or decides to quit.
-    while (true)
-    {
-        // If the entered admin login information is valid, exit the loop.
-        if (adminLogin(adminUsername, adminPassword))
-        {
-            break;
-        }
-        // If the entered admin login information is invalid, prompt the user to retry or quit.
-        else
-        {
-            std::cout << "Invalid login information. Try again? (y/n): " << std::endl;
-            saferCin(adminTryAgain);
-
-            // If the user chooses to retry, prompt them to enter their admin username and password again.
-            if (adminTryAgain == "y")
-            {
-                std::cout << "Enter your admin username: ";
-                saferCin(adminUsername);
-
-                std::cout << "Enter your admin password: ";
-                saferCin(adminPassword);
-            }
-            // If the user chooses to quit, exit the program and return 0.
-            else
-            {
-                exit(0);
-                return 0;
-            }
-        }
-    }
-
-    // If the admin login was successful, return 1 to indicate success.
-    return 1;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -38,6 +38,18 @@
     <ClInclude Include="md5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shoppers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Admin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SaferCIN.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ListFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="adminLogin.csv" />

@@ -1,4 +1,31 @@
 ﻿  Source.cpp
-C:\Users\sande\Desktop\Book-Seach\Books.h(224,22): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\Users\sande\Desktop\Book-Seach\Books.h(1256,42): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
-  Book Seach.vcxproj -> C:\Users\sande\Desktop\Book-Seach\x64\Debug\Book Seach.exe
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(32,55): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(34,30): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(41,32): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(44,26): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(46,76): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(47,77): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(48,43): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(71,30): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(119,55): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(121,30): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(128,32): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(131,26): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(133,76): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(134,77): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(135,43): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(158,30): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(199,51): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(201,26): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(208,28): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(211,23): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(220,22): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(250,51): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(252,26): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(259,28): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(262,23): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\ListFunctions.h(271,22): error C2065: 'stmt': undeclared identifier
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\Books.h(232,22): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'double', possible loss of data
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\Books.h(420,13): error C3861: 'displayMainMenu': identifier not found
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\Books.h(433,17): error C3861: 'displayMainMenu': identifier not found
+C:\Users\sande\Desktop\Book-Search-Alpha\Book-Search-Alpha\Books.h(1106,42): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
