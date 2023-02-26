@@ -17,5 +17,9 @@ TODO:
 
 7. When you log into the admin functions, and choose to change a user's password, it does not take any input and prompts you that "" does not exist. Then you press enter and it closes.
 
+2/26 Update:
+
+Searchbooks function needs to be reworked and a searchbookshandler needs to be added. The code needs to be rearranged as well so that the searchbook function can use some of the functions it's trying to use.
+
 
 There are probably more bugs, but that is what I found for today 02/22/2023
