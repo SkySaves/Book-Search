@@ -7,99 +7,154 @@
 #include <vector>
 #include <sstream>
 #include <limits>
+#include <random>
+#include <iomanip>
+#include <conio.h>
+#include "sqlite3.h"
+#include <tuple>
+#include "Login.h"
+#include "Shoppers.h"
+#include "SaferCIN.h"
+#include "ListFunctions.h"
+#include "Handlers.h"
+#include "MainMenu.h"
+
+
+
 using namespace std;
+
+
+
 /* ---------------- CLASSES ---------------- */
 
 // This defines the class "Book" which has 6 data members : ISBN, title, author, publisher, year, and description.
 // All of these variables are of type string except for year which is an integer.
-class Book
-{
-
+class Book {
 public:
+    string ISBN;
     string title;
     string author;
-    string publisher;
-    string ISBN;
-    string description;
     int year;
+    string publisher;
+    int MSRP;
+    int quantity;
+    string description;
 };
+
 
 /* ---------------- GLOBALS ---------------- */
 
 // Empty vector of type Book named "books". This is where the output will be stored.
-vector<Book> books; // Main CSV of books
+vector<Book> books; // Main database of books
 
-// This is a global vector of Book objects which is used to store books that are added to the list.=
-vector<Book> bookList; // Used by the make a list functionality
+// This is a global vector of Book objects which is used to store books that are added to the list.
+vector<Book> bookList; // Used by the "make a list" functionality
+
+sqlite3_stmt* stmt;
 
 /* ---------------- METHODS ---------------- */
 
-/**************************************************************************
 
-readBooks - This function reads the books data from a csv file named books.csv and stores the information in the books vector.
 
-This function uses an ifstream object named booksFile to open the file
-named books.csv. The file is read line by line using the getline function
-and each line is stored in the variable named line.
-The function then uses the find function to locate the positions of the
-commas in each line. These positions are stored in the variables i1, i2,
-i3, i4 and i5.
 
-A Book object named book is then created and the values of ISBN, title,
-author, publisher, year and description are extracted from the line string
-and stored in the book object. This process is done using stringstream and
-the substr function.
 
-Finally, the book object is added to the books vector. This process is
-repeated until all the lines in the file have been read.
-Once all the books have been added to the books vector, the booksFile
-object is closed and the function returns.
 
-The readBooks function assumes that the books.csv file exists and is
-formatted correctly. If the file does not exist or if the format is
-incorrect, the function will produce unexpected results.
-*************************************************************************/
+
+
 void readBooks()
 {
-    // Opens the "books.csv" file in input mode.
-    ifstream booksFile("books.csv");
-    // A string variable to store each line read from the file.
-    string line;
+    // Open the database.
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
 
-    // A while loop that continues until the end of the file is reached.
-    while (getline(booksFile, line))
-    {
-        // Variables that store the position of commas in the line.
-        int i1 = line.find(",");
-        int i2 = line.find(",", i1 + 1);
-        int i3 = line.find(",", i2 + 1);
-        int i4 = line.find(",", i3 + 1);
-        int i5 = line.find(",", i4 + 1);
+    //  This code prepares a SQL SELECT statement to retrieve all rows and columns from a "books" table in a SQLite database, and handles any errors that occur during the preparation process.
+    string sql = "SELECT * FROM books";
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
 
+    // Loop through the results of the SELECT statement and create Book objects. This code retrieves the value of the first column of the current row of a SQLite SELECT statement result set and assigns it to the ISBN field of a book object. If the column value is null, an empty string is assigned to the ISBN field.
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
         // A Book object to store the information of the book.
         Book book;
 
-        // A stringstream object to convert the year field from string to integer.
-        stringstream ss;
-        ss << line.substr(0, i1);
-        ss >> book.ISBN;
-        book.title = line.substr(i1 + 1, i2 - i1 - 1);
-        book.author = line.substr(i2 + 1, i3 - i2 - 1);
-        book.publisher = line.substr(i3 + 1, i4 - i3 - 1);
-        ss.clear();
-        ss << line.substr(i4 + 1, i5 - i4 - 1);
-        ss >> book.year;
-        book.description = line.substr(i5 + 1);
+        // Get the columns of the current row of the SELECT statement and store them in the Book object.
+        const char* isbnPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        if (isbnPtr != nullptr) {
+            book.ISBN = isbnPtr;
+        }
+        else {
+            book.ISBN = "";
+        }
+
+        const char* titlePtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        if (titlePtr != nullptr) {
+            book.title = titlePtr;
+        }
+        else {
+            book.title = "";
+        }
+
+        const char* authorPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        if (authorPtr != nullptr) {
+            book.author = authorPtr;
+        }
+        else {
+            book.author = "";
+        }
+
+        book.year = sqlite3_column_int(stmt, 3);
+
+        const char* publisherPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        if (publisherPtr != nullptr) {
+            book.publisher = publisherPtr;
+        }
+        else {
+            book.publisher = "";
+        }
+
+        book.MSRP = sqlite3_column_int(stmt, 5);
+        book.quantity = sqlite3_column_int(stmt, 6);
+
+        const char* descriptionPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+        if (descriptionPtr != nullptr) {
+            book.description = descriptionPtr;
+        }
+        else {
+            book.description = "";
+        }
+
         // Adds the Book object to the books vector.
         books.push_back(book);
     }
+
+    // Finalize the statement and close the database.
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
 }
+
+
+
+
+
 
 
 // Creates pages of books and displays them to the user
 // displayAsPages is a function that takes in a vector of Book objects and displays them one page at a time.
 void displayAsPages(vector<Book>& books)
 {
+
+
+
     // The number of books displayed on each page.
     int PAGESIZE = 1;
     // The current page number.
@@ -107,6 +162,47 @@ void displayAsPages(vector<Book>& books)
 
     // A string to store the user's input.
     string menuInput = "";
+
+    // Open the database.
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK)
+    {
+        cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
+        return;
+    }
+
+    // Execute a SELECT statement to retrieve the book data.
+
+    books.clear();
+
+    const char* sql = "SELECT ISBN, [Book-Title], [Book-Author], [Year-Of-Publisher], Publisher, MSRP, Quantity, Description FROM books";
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    if (rc != SQLITE_OK)
+    {
+        cerr << "Error preparing statement: " << sqlite3_errmsg(db) << endl;
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return;
+    }
+
+    // Iterate through the results and populate the books vector.
+    while (sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        Book book;
+        book.ISBN = sqlite3_column_text(stmt, 0) ? reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0)) : "";
+        book.title = sqlite3_column_text(stmt, 1) ? reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1)) : "";
+        book.author = sqlite3_column_text(stmt, 2) ? reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)) : "";
+        book.year = sqlite3_column_int(stmt, 3);
+        book.publisher = sqlite3_column_text(stmt, 4) ? reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4)) : "";
+        book.MSRP = sqlite3_column_int(stmt, 5);
+        book.quantity = sqlite3_column_int(stmt, 6);
+        book.description = sqlite3_column_text(stmt, 7) ? reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7)) : "";
+        books.push_back(book);
+    }
+    // Finalize the statement and close the database.
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
 
     // An infinite loop that continues until the user inputs "exit".
     while (true)
@@ -122,7 +218,7 @@ void displayAsPages(vector<Book>& books)
             {
                 break;
             }
-            // Prints the ISBN, title, and author of each book on the current page.
+            // Prints the ISBN, title, author of each book on the current page.
             std::cout << "ISBN: " << books[i].ISBN << endl;
             std::cout << "Title: " << books[i].title << endl;
             std::cout << "Author: " << books[i].author << endl;
@@ -135,19 +231,13 @@ void displayAsPages(vector<Book>& books)
         pages = pages == 0 ? 1 : pages;
 
         // Prints the current page number and the total number of pages.
-        cout << "Page ["
-            << page + 1
-            << "] of ["
-            << pages
-            << "]"
-            << endl;
+        std::cout << "Page [" << page + 1 << "] of [" << pages << "]" << endl;
 
-        // Prompts the user to press enter to go to the next page or type "exit" to exit.
-        cout << "Press enter to go to the next page" << endl;
-        cout << "Type 'exit' to exit" << endl;
+        // Prompts the user to press enter to go to the next page or type "exit"
+        std::cout << "Press enter to go to the next page or type \"exit\" to exit: ";
 
         // Gets the user's input.
-        getline(cin, menuInput);
+        std::getline(std::cin, menuInput);
 
         // Exits the loop if the user inputs "exit".
         if (menuInput == "exit")
@@ -165,70 +255,249 @@ void displayAsPages(vector<Book>& books)
             page = 0;
         }
     }
-}
+    }
 
 
 
 
-// searchBooks is a function that takes in a search query and a search choice, and returns a vector of books that match the query.
-void searchBooks(string search, int searchChoice)
-{
-    // A vector to store the books that match the search query.
-    vector<Book> foundBooks = vector<Book>();
-
-    // Loops through all the books in the books vector.
-    for (Book book : books)
+    void searchBooks(string search, int searchChoice)
     {
-        // Uses the searchChoice to determine how to search for books.
-        switch (searchChoice)
-        {
+        // Open the database.
+        sqlite3* db;
+        int rc = sqlite3_open("bookstore.db", &db);
+        if (rc != SQLITE_OK) {
+            sqlite3_close(db);
+            std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+            return;
+        }
+        // Construct the SQL statement based on the user's search choice.
+        std::string columnName;
+        switch (searchChoice) {
         case 0:
-            // Searches for books by title.
-            if (book.title.find(search) != string::npos)
-            {
-                // Adds the book to the foundBooks vector if it matches the search query.
-                foundBooks.push_back(book);
-            }
+            columnName = "Book-Title";
             break;
         case 1:
-            // Searches for books by author.
-            if (book.author.find(search) != string::npos)
-            {
-                // Adds the book to the foundBooks vector if it matches the search query.
-                foundBooks.push_back(book);
-            }
+            columnName = "Book-Author";
             break;
         case 2:
-            // Searches for books by ISBN.
-            if (book.ISBN.find(search) != string::npos)
-            {
-                // Adds the book to the foundBooks vector if it matches the search query.
-                foundBooks.push_back(book);
-            }
+            columnName = "ISBN";
             break;
-
         default:
-            break;
+            return;
+        }
+
+        // Prepare the SELECT statement.
+        std::stringstream ss;
+        ss << "SELECT * FROM books WHERE `" << columnName << "` LIKE ?";
+        std::string sql = ss.str();
+
+        std::cout << "SQL statement: " << sql << std::endl; // add this line to print out the constructed SQL query
+
+        // Prepare the SQL statement.
+        sqlite3_stmt* stmt;
+        rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+        if (rc != SQLITE_OK) {
+            sqlite3_finalize(stmt);
+            sqlite3_close(db);
+            std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+            return;
+        }
+
+        // Bind the search term to the SQL statement.
+        rc = sqlite3_bind_text(stmt, 1, ("%" + search + "%").c_str(), -1, SQLITE_TRANSIENT);
+        if (rc != SQLITE_OK) {
+            sqlite3_finalize(stmt);
+            sqlite3_close(db);
+            std::cerr << "Error binding parameter: " << sqlite3_errmsg(db) << std::endl;
+            return;
+        }
+
+        // Loop through the results of the SELECT statement and create Book objects.
+        vector<Book> books;
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+            Book book;
+
+            // Handle null pointers using if statements.
+            const char* isbnPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+            if (isbnPtr != nullptr) {
+                book.ISBN = isbnPtr;
+            }
+            else {
+                book.ISBN = "";
+            }
+
+            const char* titlePtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+            if (titlePtr != nullptr) {
+                book.title = titlePtr;
+            }
+            else {
+                book.title = "";
+            }
+
+            const char* authorPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+            if (authorPtr != nullptr) {
+                book.author = authorPtr;
+            }
+            else {
+                book.author = "";
+            }
+
+            book.year = sqlite3_column_int(stmt, 3);
+
+            const char* publisherPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+            if (publisherPtr != nullptr) {
+                book.publisher = publisherPtr;
+            }
+            else {
+                book.publisher = "";
+            }
+
+            book.MSRP = sqlite3_column_int(stmt, 5);
+            book.quantity = sqlite3_column_int(stmt, 6);
+
+            const char* descriptionPtr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+            if (descriptionPtr != nullptr) {
+                book.description = descriptionPtr;
+            }
+            else {
+                book.description = "";
+            }
+
+            books.push_back(book);
+        }
+        // Finalize the statement and close the database.
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+
+        // If no books were found, print a message to the user.
+        if (books.empty()) {
+            char searchAgain;
+            std::cout << "No books found matching the search criteria." << std::endl;
+            std::cout << "Search again? y/n" << std::endl;
+            saferCin(searchAgain);
+            if (searchAgain == 'y') {
+                searchBookHandler();
+			}
+            else {
+				return;
+			}
+        }
+        displayAsPages(books);
+}
+     
+
+
+
+bool userExists(std::string username) {
+    // Open the database.
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+
+    // Prepare the SELECT statement.
+
+    std::string sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+    if (rc != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+
+    // Bind the username parameter to the SELECT statement.
+    rc = sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
+    if (rc != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error binding username parameter: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+
+    // Execute the SELECT statement and get the result.
+    bool exists = false;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        int count = sqlite3_column_int(stmt, 0);
+        if (count > 0) {
+            exists = true;
         }
     }
 
-    // Calls the displayAsPages function to display the found books one page at a time.
-    displayAsPages(foundBooks);
+    // Finalize the statement and close the database.
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    return exists;
 }
 
 
-// This function is used to add new books to the library by taking input from the user and writing the information to the "books.csv" file.
+
+
+// Function to add a book to the "books" table in the "bookstore.db" database.
+void addBookToTable(string ISBN, string title, string author, int year, string publisher, int price, int quantity, string description)
+{
+    // Open the "bookstore.db" database.
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+
+    if (rc != SQLITE_OK) {
+        cerr << "Error opening database: " << sqlite3_errmsg(db) << endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    // Create an SQL query to insert a new book into the "books" table.
+    string sql = "INSERT INTO books (ISBN, Book_Title, Book_Author, Year_Of_Publisher, Publisher, MSRP, Quantity, Description) "
+        "VALUES ('" + ISBN + "', '" + title + "', '" + author + "', '" + to_string(year) + "', '" + publisher + "', '" + to_string(price) + "', '" + to_string(quantity) + "', '" + description + "');";
+
+    // Execute the SQL query.
+    char* errMsg = NULL;
+    rc = sqlite3_exec(db, sql.c_str(), NULL, NULL, &errMsg);
+
+    if (rc != SQLITE_OK) {
+        cerr << "Error executing SQL query: " << errMsg << endl;
+        sqlite3_free(errMsg);
+    }
+
+    // Close the database connection.
+    sqlite3_close(db);
+
+    cout << "Book added to the table." << endl;
+}
+
+
+
+
+
+// Function to add a book to the "books" table in the "bookstore.db" database.
+// does the same thing as the modified addBookToTable() function. It also prompts the user to enter the book's information, opens the database, prepares and executes an INSERT statement, and prints a success message. However, it uses a different method to insert the book's data into the database, using sqlite3_bind_text() and sqlite3_bind_int() to bind the parameters to the statement.
 void addBook()
 {
-    // Declaring variables to store the ISBN, book title, book author, year of publication, and publisher.
+    // Declaring variables to store the ISBN, book title, book author, year of publication, publisher, MSRP, quantity, and description.
     string ISBN;
     string bookTitle;
     string bookAuthor;
-    string yearOfPublication;
+    int yearOfPublication;
     string publisher;
-    // Creating an ofstream object to open the "books.csv" file in append mode.
-    ofstream bookFile;
-    bookFile.open("books.csv", ios::app);
+    int MSRP;
+    int quantity;
+    string description;
+
+    // Open the database
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    // Getting the ISBN from the user
     // A do-while loop that continues until a valid ISBN is entered by the user.
     // The ISBN should be 13 digits long.
     do
@@ -241,7 +510,8 @@ void addBook()
             cout << "Invalid ISBN. Try again." << endl;
         }
     } while (ISBN.length() != 13);
-    // Getting the book title, author, year of publication, and publisher from the user.
+
+    // Getting the book title, author, year of publication, publisher, MSRP, quantity, and description from the user.
     cout << "Enter Book Title: ";
     cin >> bookTitle;
     cout << "Enter Book Author: ";
@@ -251,42 +521,53 @@ void addBook()
     cout << "Enter Year of Publication: ";
     cin >> yearOfPublication;
     cout << "Enter Publisher: ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     getline(cin, publisher);
+    cout << "Enter MSRP: ";
+    cin >> MSRP;
+    cout << "Enter Quantity: ";
+    cin >> quantity;
+    cout << "Enter Description: ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin, description);
 
-    // Writing the information to the "books.csv" file, separating each field by a comma.
-    bookFile << ISBN << "," << bookTitle << "," << bookAuthor << "," << yearOfPublication << "," << publisher << endl;
-    // Closing the "books.csv" file.
-    bookFile.close();
+    // Prepare the INSERT statement
+
+    string sql = "INSERT INTO books(ISBN, Book_Title, Book_Author, Year_Of_Publisher, Publisher, MSRP, Quantity, Description) VALUES(?, ?, ?, ?, ?, ?, ?, ?);";
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    // Bind the parameters to the statement
+    rc = sqlite3_bind_text(stmt, 1, ISBN.c_str(), -1, SQLITE_TRANSIENT);
+    rc = sqlite3_bind_text(stmt, 2, bookTitle.c_str(), -1, SQLITE_TRANSIENT);
+    rc = sqlite3_bind_text(stmt, 3, bookAuthor.c_str(), -1, SQLITE_TRANSIENT);
+    rc = sqlite3_bind_int(stmt, 4, yearOfPublication);
+    rc = sqlite3_bind_text(stmt, 5, publisher.c_str(), -1, SQLITE_TRANSIENT);
+
+    // Execute the statement and check if it was successful
+    if (sqlite3_step(stmt) != SQLITE_DONE) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error inserting row: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
     // Printing a success message to let the user know that the book was added successfully.
-
     cout << "Book added successfully!" << endl;
     cout << "Re-building book list..." << endl;
     readBooks();
+
 }
 
 
-
-
-// addBook is a function that takes in the ISBN, title, author, year, and publisher of a book, and adds the book to the books.csv file.
-void addBook(string ISBN, string title, string author, int year, string publisher)
-{
-    // Opens the books.csv file in append mode.
-    ofstream bookFile;
-    bookFile.open("books.csv", ios::app);
-
-    // Writes the ISBN, title, author, year, and publisher of the book to the file.
-    bookFile << ISBN << "," << title << "," << author << "," << year << "," << publisher << endl;
-
-    // Closes the file.
-    bookFile.close();
-
-    // Confirms that the book was added successfully.
-    cout << "Book added successfully!" << endl;
-
-    // Re-reads the books from the books.csv file.
-    cout << "Re-building book list..." << endl;
-    readBooks();
-}
 
 
 
@@ -294,7 +575,6 @@ void deleteBook()
 {
     // Variables to store the book information
     string ISBN;
-    string line;
 
     // Loop that continues until the user inputs a valid ISBN (13 digits)
     do
@@ -309,48 +589,35 @@ void deleteBook()
         }
     } while (ISBN.length() != 13);
 
-    // Open the books.csv file for reading
-    ifstream bookFile;
-    bookFile.open("books.csv");
-
-    // Open a temporary file for writing
-    ofstream tempFile;
-    tempFile.open("temp.csv");
-
-    // Loop that reads the books.csv line by line
-    while (getline(bookFile, line))
-    {
-        // Find the positions of the commas in the line
-        int i1 = line.find(",");
-        int i2 = line.find(",", i1 + 1);
-        int i3 = line.find(",", i2 + 1);
-        int i4 = line.find(",", i3 + 1);
-
-        // Variables to store the book information
-        Book book;
-        book.ISBN = stoi(line.substr(0, i1));
-        book.title = line.substr(i1 + 1, i2 - i1 - 1);
-        book.author = line.substr(i2 + 1, i3 - i2 - 1);
-        book.publisher = line.substr(i3 + 1, i4 - i3 - 1);
-        stringstream ss(line.substr(i4 + 1));
-        ss >> book.year;
-
-        // If the ISBN of the book being read does not match the ISBN entered by the user, write the book information to the temp file
-        if (book.ISBN != ISBN)
-        {
-            tempFile << book.ISBN << "," << book.title << "," << book.author << "," << book.publisher << "," << book.year << endl;
-        }
+    // Open the database
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
     }
 
-    // Close both the books.csv and temp files
-    bookFile.close();
-    tempFile.close();
+    // Prepare the DELETE statement
 
-    // Delete the books.csv file
-    remove("books.csv");
+    string sql = "DELETE FROM books WHERE ISBN=?;";
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
 
-    // Rename the temp file to books.csv
-    rename("temp.csv", "books.csv");
+    // Bind the ISBN parameter to the statement
+    rc = sqlite3_bind_text(stmt, 1, ISBN.c_str(), -1, SQLITE_TRANSIENT);
+
+    // Execute the DELETE statement
+    rc = sqlite3_step(stmt);
+
+    // Finalize the statement and close the database
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
 
     // Display a success message to the user
     cout << "Book deleted successfully!" << endl;
@@ -367,7 +634,6 @@ void deleteBook()
  */
 void choices()
 {
-
     system("CLS");
     cout << "What would you like to do?\n1. Search for a book\n2. Add a book to the database\n3. Create a list\n4. Exit\nEnter your choice: ";
 
@@ -415,122 +681,369 @@ void choices()
     return;
 }
 
-// This function takes user input for the ISBN of the bookand returns the input ISBN.
-string getISBN()
-{
-    string ISBN;
-    cout << "Enter ISBN: ";
-    cin >> ISBN;
-    return ISBN;
-}
 
-// This function searches the books vector for the book with the given ISBN and returns the index of the book in the vector if found, and -1 if the book is not found.
+
+
+
+// This function searches the database for the book with the given ISBN and returns the row ID of the book if found, and -1 if the book is not found.
 int searchBookIndex(string ISBN)
 {
-    for (int i = 0; i < books.size(); i++)
-    {
-        if (books[i].ISBN == ISBN)
-        {
-            return i;
-        }
+    // Open the database
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        sqlite3_close(db);
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return -1;
     }
-    return -1;
+
+    // Prepare the SELECT statement
+
+    string sql = "SELECT rowid FROM books WHERE ISBN = ?;";
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        return -1;
+    }
+
+    // Bind the ISBN parameter to the statement
+    rc = sqlite3_bind_text(stmt, 1, ISBN.c_str(), -1, SQLITE_TRANSIENT);
+
+    // Execute the statement and fetch the row ID
+    int rowID = -1;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        rowID = sqlite3_column_int(stmt, 0);
+    }
+
+    // Finalize the statement and close the database
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    return rowID;
 }
 
 
-// addToList is a function that adds books to the bookList vector.
-void addToList()
+
+
+
+
+/* ---------------- CLASSES ---------------- */
+
+
+// Class definition for a menu object that can display options and receive input from the user.
+class Menu
 {
-    // An infinite loop that prompts the user for the ISBN of a book and adds it to the bookList vector if it is found.
-    while (true)
+private:
+    // A vector of tuples containing the name of the option and its corresponding return value.
+    std::vector<std::tuple<std::string, int>> options;
+    // The title of the menu to be displayed.
+    std::string title;
+
+public:
+    // Constructor that takes in the title of the menu as a parameter.
+    Menu(std::string title)
     {
-        // Calls the getISBN function to get the ISBN of the book to be added to the list.
-        string ISBN = getISBN();
+        this->title = title;
+    }
+    // Adds an option to the menu with the given name and return value.
+    void addOption(std::string name, int returnValue)
+    {
+        options.push_back(std::tuple<std::string, int>(name, returnValue));
+    }
 
-        // Calls the searchBookIndex function to search for the book with the given ISBN.
-        int index = searchBookIndex(ISBN);
-
-        // If the book is found, adds it to the bookList vector.
-        if (index != -1)
+    // Displays the menu options to the console.
+    void display()
+    {
+        std::cout << title << std::endl;
+        for (int i = 0; i < options.size(); i++)
         {
-            bookList.push_back(books[index]);
-            cout << "Book added to list" << endl;
+            std::cout << i + 1
+                << ": "
+                << std::get<0>(options[i])
+                << std::endl;
         }
-        // If the book is not found, prompts the user to try again or exit.
+    }
+
+    // Prompts the user to enter their choice and sets the choice parameter to the corresponding return value of the selected option.
+    void getChoice(int& choice)
+    {
+        std::cout << "Enter your choice: ";
+        saferCin(choice);
+
+        if (choice < 1 || choice > options.size())
+        {
+            std::cout << "Invalid choice. Try again.";
+        }
         else
         {
-            cout << "Book not found" << endl;
-            cout << "Try again? (y/n): ";
-            char choice;
-            cin >> choice;
-            if (choice == 'n')
-            {
-                // Exits the function if the user chooses not to try again.
-                return;
-            }
+            choice = std::get<1>(options[choice - 1]);
         }
     }
-}
 
-
-/*
-Function: removeFromList()
-Input: None
-Output: None
-
-The removeFromList function is used to remove a book from the bookList.
-It first asks the user to input the ISBN of the book they want to remove.
-It then searches the bookList for a book with the specified ISBN.
-If it finds a book with the ISBN, it removes the book from the bookList and outputs "Book removed from list".
-If it doesn't find a book with the ISBN, it outputs "Book not found in list" and gives the user the option to try again.
-*/
-void removeFromList()
-{
-    string ISBN = getISBN();
-    int index = -1;
-    // Search bookList for the specified ISBN
-    for (int i = 0; i < bookList.size(); i++)
+    // Prompts the user to enter their choice with the given prompt message and sets the choice parameter to the corresponding return value of the selected option.
+    void getChoice(int& choice, std::string prompt)
     {
-        if (bookList[i].ISBN == ISBN)
+        std::cout << prompt;
+        saferCin(choice);
+
+        if (choice < 1 || choice > options.size())
         {
-            index = i;
-            break;
+            std::cout << "Invalid choice. Try again.";
         }
-    }
-    // Remove book if it's found in the list
-    if (index != -1)
-    {
-        bookList.erase(bookList.begin() + index);
-        cout << "Book removed from list" << endl;
-    }
-    // If the book is not found in the list, prompt the user to try again
-    else
-    {
-        cout << "Book not found in list" << endl;
-        cout << "Try again? (y/n): ";
-        char choice;
-        cin >> choice;
-        if (choice == 'y')
+        else
         {
-            removeFromList();
+            choice = std::get<1>(options[choice - 1]);
         }
     }
-}
+};
 
-/*
-Function: displayList()
-Input: None
-Output: None
 
-The displayList function is used to display all the books in the bookList.
-It outputs the ISBN, title, and author of each book in the bookList,
-and outputs the total number of books in the list.
-*/
-// displayList is a function that displays the books in the bookList vector.
+
+
+
+
+
+
+
+
+
 void displayList()
 {
-    // Calls the displayAsPages function to display the books in the bookList vector.
-    displayAsPages(bookList);
+    // Open the database.
+    sqlite3* db;
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    // Execute a SELECT statement to retrieve the book data sorted by price.
+    std::vector<Book> books;
+    const char* sql = "SELECT * FROM books ORDER BY MSRP";
+    sqlite3_stmt* stmt;
+    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        return;
+    }
+
+    // Iterate through the results and populate the books vector.
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        Book book;
+        book.ISBN = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        book.title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        book.author = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        book.year = sqlite3_column_int(stmt, 3);
+        book.publisher = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+        book.MSRP = sqlite3_column_double(stmt, 5);
+        book.quantity = sqlite3_column_int(stmt, 6);
+        book.description = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
+        books.push_back(book);
+    }
+
+    // Finalize the statement and close the database.
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    // Display the books.
+    if (books.empty()) {
+        std::cout << "No books found." << std::endl;
+        return;
+    }
+    std::cout << "ISBN\tTitle\tAuthor\tYear\tPublisher\tPrice\tQuantity\tDescription" << std::endl;
+    for (const Book& book : books) {
+        std::cout << book.ISBN << '\t' << book.title << '\t' << book.author << '\t'
+            << book.year << '\t' << book.publisher << '\t' << book.MSRP << '\t'
+            << book.quantity << '\t' << book.description << std::endl;
+    }
+
+    // Save the books to the shopping list.
+    std::cout << "Do you want to save the shopping list to the database? (Y/N) ";
+    std::string answer;
+    std::getline(std::cin, answer);
+    if (answer == "Y" || answer == "y") {
+        rc = sqlite3_open("bookstore.db", &db);
+        if (rc != SQLITE_OK) {
+            std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+            return;
+        }
+
+        // Delete the existing shopping list.
+        sql = "DELETE FROM shoppingList";
+        rc = sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
+        if (rc != SQLITE_OK) {
+            std::cerr << "Error deleting shopping list: " << sqlite3_errmsg(db) << std::endl;
+            sqlite3_close(db);
+            return;
+        }
+
+        // Insert the new shopping list.
+        for (const Book& book : books) {
+            char* errorMessage = nullptr;
+            std::string sql = "INSERT INTO shoppingList (ISBN, [Book-Title], [Book-Author], [Year-Of-Publisher], Publisher, MSRP, Quantity, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+            rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+            if (rc != SQLITE_OK) {
+                std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+                sqlite3_finalize(stmt);
+                sqlite3_close(db);
+                return;
+            }
+
+            sqlite3_bind_text(stmt, 1, book.ISBN.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_text(stmt, 2, book.title.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_text(stmt, 3, book.author.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, 4, book.year);
+            sqlite3_bind_text(stmt, 5, book.publisher.c_str(), -1, SQLITE_STATIC);
+            sqlite3_bind_int(stmt, 6, book.MSRP);
+            sqlite3_bind_int(stmt, 7, book.quantity);
+            sqlite3_bind_text(stmt, 8, book.description.c_str(), -1, SQLITE_STATIC);
+
+            rc = sqlite3_step(stmt);
+            if (rc != SQLITE_DONE) {
+                std::cerr << "Error inserting book into shopping list: " << sqlite3_errmsg(db) << std::endl;
+                sqlite3_finalize(stmt);
+                sqlite3_close(db);
+                return;
+            }
+
+            sqlite3_finalize(stmt);
+        }
+
+        // Close the database.
+        sqlite3_close(db);
+
+        std::cout << std::endl << "Shopping list saved." << std::endl;
+
+        // Display the main menu.
+        displayMainMenu();
+    }
 }
+
+
+
+
+
+void displayMainMenu() {
+    std::string userChoice;
+
+
+    while (true) {
+        // Clears the console screen.
+        system("cls");
+
+        // Display the main menu options.
+        std::cout << "Welcome to the Bookstore!" << std::endl;
+        std::cout << "Please choose an option:" << std::endl;
+        std::cout << "1. Search for a book" << std::endl;
+        std::cout << "2. Add a book to the shopping list" << std::endl;
+        std::cout << "3. View the shopping list" << std::endl;
+        std::cout << "4. Create a Shopper account" << std::endl;
+        std::cout << "5. Exit" << std::endl;
+        std::cout << "Enter your choice (1-5): ";
+
+        // Get the user's input.
+        saferCin(userChoice);
+
+        // Call the appropriate function based on the user's choice.
+        if (userChoice == "1") {
+            searchBookHandler();
+            std::cout << "Book search complete." << std::endl;
+        }
+        else if (userChoice == "2") {
+            addBookHandler();
+            std::cout << "Book added to shopping list." << std::endl;
+        }
+        else if (userChoice == "3") {
+            listHandler();
+            std::cout << "Shopping list displayed." << std::endl;
+        }
+        else if (userChoice == "4") {
+            addShopperHandler();
+            std::cout << "Shopper account created." << std::endl;
+        }
+        else if (userChoice == "5") {
+            break;
+        }
+        else {
+            // Display an error message if the user's input is invalid.
+            std::cout << "Invalid choice. Please enter a number from 1 to 5." << std::endl;
+        }
+        // Pause the program so the user can see the result message.
+        std::cout << "Returning to the main menu. Press any key to continue...";
+        std::cin.get();
+    }
+}
+
+
+
+
+
+
+
+//populates the MSRP.
+/* int msrp() {
+    // Open the books.csv file
+    ifstream inFile("books.csv");
+    if (!inFile) {
+        cerr << "Unable to open file books.csv";
+        exit(1);
+    }
+
+    // Open a new file to write the updated data
+    ofstream outFile("books_updated.csv");
+    if (!outFile) {
+        cerr << "Unable to open file books_updated.csv";
+        exit(1);
+    }
+
+    // Write the header row to the output file
+    string header;
+    getline(inFile, header);
+    header += ",MSRP";
+    outFile << header << endl;
+
+    // Use a random number generator to generate the MSRP values
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_real_distribution<double> dis(34.99, 103.97);
+
+    // Loop through each line in the input file
+    string line;
+    while (getline(inFile, line)) {
+        // Split the line into columns
+        string isbn, title, author, year, publisher;
+        istringstream ss(line);
+        getline(ss, isbn, ',');
+        getline(ss, title, ',');
+        getline(ss, author, ',');
+        getline(ss, year, ',');
+        getline(ss, publisher, ',');
+
+        // Generate a random MSRP value
+        double msrp = dis(gen);
+
+        // Write the updated line to the output file
+        outFile << isbn << "," << title << "," << author << "," << year << "," << publisher << "," << fixed << setprecision(2) << msrp << endl;
+    }
+
+    // Close the files
+    inFile.close();
+    outFile.close();
+
+    return 0;
+} */
+
+
+
+
+
+
+
+
+
 
 #endif

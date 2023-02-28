@@ -1,13 +1,53 @@
 ﻿  Source.cpp
-C:\Users\sande\source\repos\SkySaves\Book-Search\Login.h(20,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(73,32): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(74,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(75,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(76,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(77,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(134,22): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(324,32): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(325,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(326,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(327,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Book Seach.vcxproj -> C:\Users\sande\source\repos\SkySaves\Book-Search\x64\Debug\Book Seach.exe
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(32,55): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(34,30): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(41,32): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(44,26): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(46,76): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(47,77): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(48,43): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(71,30): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(119,55): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(121,30): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(128,32): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(131,26): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(133,76): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(134,77): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(135,43): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(158,30): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(199,51): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(201,26): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(208,28): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(211,23): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(220,22): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(250,51): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(252,26): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(259,28): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(262,23): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\ListFunctions.h(271,22): error C2065: 'stmt': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(25,5): error C2065: 'Menu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(25,10): error C2146: syntax error: missing ';' before identifier 'searchMenu'
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(25,10): error C3861: 'searchMenu': identifier not found
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(26,5): error C2065: 'searchMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(27,5): error C2065: 'searchMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(28,5): error C2065: 'searchMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(29,5): error C2065: 'searchMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(51,9): error C2065: 'searchMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(52,9): error C2065: 'searchMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(80,9): error C3861: 'searchBooks': identifier not found
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(139,5): error C3861: 'addBookToTable': identifier not found
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(155,20): error C2065: 'books': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(155,5): error C3861: 'displayAsPages': identifier not found
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(170,5): error C2065: 'Menu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(170,10): error C2146: syntax error: missing ';' before identifier 'listMenu'
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(170,10): error C3861: 'listMenu': identifier not found
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(171,5): error C2065: 'listMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(172,5): error C2065: 'listMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(173,5): error C2065: 'listMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(174,5): error C2065: 'listMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(183,9): error C2065: 'listMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(185,9): error C2065: 'listMenu': undeclared identifier
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Handlers.h(199,13): error C3861: 'displayList': identifier not found
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Books.h(233,22): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'double', possible loss of data
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Books.h(845,42): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\skylermetzger\Desktop\Book-Search-Alpha\Books.h(925,9): error C3861: 'displayMainMenu': identifier not found
