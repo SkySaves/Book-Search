@@ -1,82 +1,67 @@
-#ifndef LoginHeader
-#define LoginHeader
+#pragma once
 
+#ifndef LOGINHEADER
+#define LOGINHEADER
 
 
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <sstream>
+#include "md5.h"
 #include "sqlite3.h"
+#include <conio.h>
+#include "Books.h"
+#include "MenuSystem.h"
+#include "Shopping.h"
+#include "Handlers.h"
+
 using namespace std;
 
+static sqlite3_stmt* stmt2;
+
+class Login
+{
+private:
+
+    std::string password;
+    char c;
+    string username;
+    string tryAgain;
+
+    // Declare variables to store admin login information and a retry prompt.
+    string adminUsername;
+    string adminPassword;
+    string oldPassword;
+    string newPassword;
+    string adminTryAgain = "y";
 
 
+public:
+    bool userExists(std::string username);
 
-bool userLogin(string username, string password) {
-	sqlite3* db;
-	sqlite3_stmt* stmt;
+    std::string readPassword();
 
-	// Opens the database
-	int rc = sqlite3_open("bookstore.db", &db);
-	if (rc != SQLITE_OK) {
-		sqlite3_close(db);
-		return false;
-	}
+    bool userLogin(string username, string password);
 
-	// Prepare the SELECT statement
-	string sql = "SELECT UserID FROM customerLogin WHERE Username = ? AND Password = ?";
-	rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
-
-
-	// Bind the parameters to the statement
-	rc = sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_TRANSIENT);
-	rc = sqlite3_bind_text(stmt, 2, password.c_str(), -1, SQLITE_TRANSIENT);
-
-
-	// Execute the statement. This will verify if the user exist or not.
-	rc = sqlite3_step(stmt);
-	bool result = false;
-	if (rc == SQLITE_ROW) {
-		result = true;
-	}
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
-
-	return result;
-}
 //This function takes in the username and password from the user and checks if the user exists in the database, then returns true or false.
-bool adminLogin(string adminUsername, string adminPassword) {
-	sqlite3* db;
-	sqlite3_stmt* stmt;
+    bool adminLogin(string adminUsername, string adminPassword);
 
-	// Opens the database
-	int rc = sqlite3_open("bookstore.db", &db);
-	if (rc != SQLITE_OK) {
-		sqlite3_close(db);
-		return false;
-	}
+    int authUserHandler();
 
-	// Prepare the SELECT statement
-	string sql = "SELECT Username, Password FROM adminLogin WHERE Username = ? AND Password = ?";
+    void registrationHandle();
 
-	rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
+    int adminLoginHandler();
 
-	// Bind the parameters to the statement
-	rc = sqlite3_bind_text(stmt, 1, adminUsername.c_str(), -1, SQLITE_TRANSIENT);
-	rc = sqlite3_bind_text(stmt, 2, adminPassword.c_str(), -1, SQLITE_TRANSIENT);
+    void changeCustomerPasswordHandler();
 
-	// Execute the statement. This will verify if the admin exists or not.
-	rc = sqlite3_step(stmt);
-	bool result = false;
-	if (rc == SQLITE_ROW) {
-		result = true;
-	}
-	sqlite3_finalize(stmt);
-	sqlite3_close(db);
+    void changeCustomerPassword();
 
-	return result;
-}
+    void changeAdminPasswordHandler();
 
+    void importFilesHandler();
+};
 
 
 #endif

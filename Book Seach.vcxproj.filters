@@ -18,11 +18,20 @@
     <ClCompile Include="Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sqlite3.c">
+    <ClCompile Include="Books.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="md5.cpp">
-      <Filter>Resource Files</Filter>
+    <ClCompile Include="Handlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shopping.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Login.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -32,26 +41,20 @@
     <ClInclude Include="Login.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="sqlite3.h">
+    <ClInclude Include="MenuSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Handlers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="md5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shoppers.h">
+    <ClInclude Include="sqlite3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Admin.h">
+    <ClInclude Include="Shopping.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SaferCIN.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ListFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="adminLogin.csv" />
   </ItemGroup>
 </Project>
