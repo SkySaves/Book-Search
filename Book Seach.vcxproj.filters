@@ -56,5 +56,8 @@
     <ClInclude Include="Shopping.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Fill.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -137,6 +137,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Books.h" />
+    <ClInclude Include="Fill.h" />
     <ClInclude Include="Handlers.h" />
     <ClInclude Include="Login.h" />
     <ClInclude Include="md5.h" />

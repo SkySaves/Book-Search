@@ -6,19 +6,6 @@
 #include "Login.h"
 
 
-class ShoppingListItem {
-public:
-	std::string ISBN;
-	std::string title;
-	std::string author;
-	std::string publisher;
-	std::string description;
-	int year;
-	int MSRP;
-	int quantity;
-};
-
-
 class Shopping
 {
 
@@ -30,6 +17,7 @@ class Shopping
 		std::string description;
 		std::string bookTitle, bookAuthor, bookISBN, bookPublisher, bookDescription;
 		int year;
+		double MSRP;
 		int bookYear, bookMSRP, bookQuantity;
 		std::string name;
 		std::string email;
@@ -51,7 +39,7 @@ class Shopping
 		void addShopper(std::string name, std::string email, double totalAmountSpent);
 
 		void addShopperHandler();
-		void addBookToShoppingList(const ShoppingListItem& item);
+		void addBookToShoppingList(const Shopping& item);
 
 
 

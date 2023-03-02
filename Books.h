@@ -30,7 +30,7 @@ class Book
         std::string description;
         int yearOfPublication;
         int year;
-        int MSRP;
+        double MSRP;
         int quantity;
         std::string bookISBN, bookPublisher, bookDescription;
 
@@ -72,14 +72,14 @@ class Book
 
         Book()
         {
-			this->bookTitle = "";
-			this->bookAuthor = "";
-			this->bookISBN = "";
-			this->bookPublisher = "";
-			this->bookYear = 0;
-			this->bookDescription = "";
-			this->bookMSRP = 0;
-			this->bookQuantity = 0;
+			title = "";
+			author = "";
+			ISBN = "";
+			publisher = "";
+			year = 0;
+			description = "";
+			MSRP = 0.0;
+			quantity = 0;
 		}
 
        
