@@ -34,14 +34,12 @@ class Shopping
 
 		void addToShoppingListHandler();
 
-		void addToShoppingList();
+		//void addToShoppingList();
 
 		void addShopper(std::string name, std::string email, double totalAmountSpent);
 
 		void addShopperHandler();
-		void addBookToShoppingList(const Shopping& item);
-
-
+		void addBookToShoppingList(const Shopping& book, int quantity);
 
 };
 

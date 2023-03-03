@@ -1,6 +1,10 @@
 #include "Login.h"
 
-void updateBookQuantities(const std::string& databaseFilename) {
+
+
+//This function is used to update the quantity of books in the database.
+
+static void updateBookQuantities(const std::string& databaseFilename) {
     sqlite3* db;
     int rc = sqlite3_open(databaseFilename.c_str(), &db);
     if (rc != SQLITE_OK) {
@@ -20,10 +24,20 @@ void updateBookQuantities(const std::string& databaseFilename) {
     const int min_qty = 2;
     const int max_qty = 56;
 
+    char* errmsg;
+    rc = sqlite3_exec(db, "BEGIN TRANSACTION", nullptr, nullptr, &errmsg);
+    if (rc != SQLITE_OK) {
+        sqlite3_free(errmsg);
+        sqlite3_finalize(stmt);
+        sqlite3_close(db);
+        throw std::runtime_error("Error beginning transaction: " + std::string(sqlite3_errmsg(db)));
+    }
+
     const char* select_sql = "SELECT rowid FROM books";
     sqlite3_stmt* select_stmt;
     rc = sqlite3_prepare_v2(db, select_sql, -1, &select_stmt, nullptr);
     if (rc != SQLITE_OK) {
+        sqlite3_exec(db, "ROLLBACK TRANSACTION", nullptr, nullptr, &errmsg);
         sqlite3_finalize(stmt);
         sqlite3_close(db);
         throw std::runtime_error("Error preparing statement: " + std::string(sqlite3_errmsg(db)));
@@ -36,6 +50,7 @@ void updateBookQuantities(const std::string& databaseFilename) {
         sqlite3_bind_int(stmt, 2, rowid);
         rc = sqlite3_step(stmt);
         if (rc != SQLITE_DONE) {
+            sqlite3_exec(db, "ROLLBACK TRANSACTION", nullptr, nullptr, &errmsg);
             sqlite3_reset(stmt);
             sqlite3_clear_bindings(stmt);
             sqlite3_finalize(stmt);
@@ -47,7 +62,22 @@ void updateBookQuantities(const std::string& databaseFilename) {
         sqlite3_clear_bindings(stmt);
     }
 
+    rc = sqlite3_exec(db, "COMMIT TRANSACTION", nullptr, nullptr, &errmsg);
+    if (rc != SQLITE_OK) {
+        sqlite3_free(errmsg);
+        sqlite3_finalize(stmt);
+        sqlite3_finalize(select_stmt);
+        sqlite3_close(db);
+        throw std::runtime_error("Error committing transaction: " + std::string(sqlite3_errmsg(db)));
+    }
+
     sqlite3_finalize(stmt);
     sqlite3_finalize(select_stmt);
     sqlite3_close(db);
+
+    std::cout << "Book quantities updated." << std::endl;
+    std::cout << "Press enter";
+    std::cin.get();
 }
+
+

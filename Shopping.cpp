@@ -1,115 +1,91 @@
 #include "Shopping.h"
 
 
-void Shopping::addToShoppingList() {
-    // Open the database.
-    sqlite3* db;
-    int rc = sqlite3_open("bookstore.db", &db);
-    if (rc != SQLITE_OK) {
-        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
-        return;
-    }
+//void Shopping::addToShoppingList() {
+//    // Open the database.
+//    sqlite3* db;
+//    int rc = sqlite3_open("bookstore.db", &db);
+//    if (rc != SQLITE_OK) {
+//        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+//        return;
+//    }
+//
+//    // Execute a SELECT statement to retrieve the book data sorted by price.
+//    std::vector<Book> books;
+//    const char* sql = "SELECT ISBN, [Book-Title], [Book-Author], MSRP, Quantity FROM books ORDER BY MSRP";
+//    sqlite3_stmt* stmt;
+//    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+//    if (rc != SQLITE_OK) {
+//        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+//        sqlite3_finalize(stmt);
+//        sqlite3_close(db);
+//        return;
+//    }
+//
+//    // Iterate through the results and populate the books vector.
+//    while (sqlite3_step(stmt) == SQLITE_ROW) {
+//        Book book;
+//        book.ISBN = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+//        book.title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+//        book.author = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+//        book.MSRP = sqlite3_column_double(stmt, 3);
+//        book.quantity = sqlite3_column_int(stmt, 4);
+//        books.push_back(book);
+//    }
+//
+//    // Finalize the statement and close the database.
+//    sqlite3_finalize(stmt);
+//    sqlite3_close(db);
+//
+//    // Display the books.
+//    if (books.empty()) {
+//        std::cout << "No books found." << std::endl;
+//        return;
+//    }
+//    std::cout << "ISBN\tTitle\tAuthor\tPrice\tQuantity" << std::endl;
+//    for (const Book& book : books) {
+//        std::cout << book.ISBN << '\t' << book.title << '\t' << book.author << '\t'
+//            << book.MSRP << '\t' << book.quantity << std::endl;
+//    }
+//
+//    // Save the books to the shopping list.
+//    std::cout << "Do you want to save the shopping list to the database? (Y/N) ";
+//    std::string answer;
+//    std::getline(std::cin, answer);
+//    if (answer == "Y" || answer == "y") {
+//        rc = sqlite3_open("bookstore.db", &db);
+//        if (rc != SQLITE_OK) {
+//            std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+//            return;
+//        }
+//
+//        // Delete the existing shopping list.
+//        sql = "DELETE FROM shoppingList";
+//        rc = sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
+//        if (rc != SQLITE_OK) {
+//            std::cerr << "Error deleting shopping list: " << sqlite3_errmsg(db) << std::endl;
+//            sqlite3_close(db);
+//            return;
+//        }
+//
+//        // Insert the new shopping list.
+//        for (const Book& book : books) {
+//            Shopping book2;
+//            book2.ISBN = book.ISBN;
+//            book2.title = book.title;
+//            book2.quantity = book.quantity;
+//            addBookToShoppingList(book2, );
+//        }
+//
+//        // Finalize the statement and close the database.
+//        sqlite3_finalize(stmt);
+//        sqlite3_close(db);
+//        // Display a message indicating the shopping list was saved.
+//        std::cout << std::endl << "Shopping list saved." << std::endl;
+//    }
+//
+//}
 
-    // Execute a SELECT statement to retrieve the book data sorted by price.
-    std::vector<Book> books;
-    const char* sql = "SELECT * FROM books ORDER BY MSRP";
-    sqlite3_stmt* stmt;
-    rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-    if (rc != SQLITE_OK) {
-        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
-        return;
-    }
-
-    // Iterate through the results and populate the books vector.
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        Book book;
-        book.ISBN = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        book.title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        book.author = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        book.year = sqlite3_column_int(stmt, 3);
-        book.publisher = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
-        book.MSRP = sqlite3_column_double(stmt, 5);
-        book.quantity = sqlite3_column_int(stmt, 6);
-        book.description = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 7));
-        books.push_back(book);
-    }
-
-    // Finalize the statement and close the database.
-    sqlite3_finalize(stmt);
-    sqlite3_close(db);
-
-    // Display the books.
-    if (books.empty()) {
-        std::cout << "No books found." << std::endl;
-        return;
-    }
-    std::cout << "ISBN\tTitle\tAuthor\tYear\tPublisher\tPrice\tQuantity\tDescription" << std::endl;
-    for (const Book& book : books) {
-        std::cout << book.ISBN << '\t' << book.title << '\t' << book.author << '\t'
-            << book.year << '\t' << book.publisher << '\t' << book.MSRP << '\t'
-            << book.quantity << '\t' << book.description << std::endl;
-    }
-
-    // Save the books to the shopping list.
-    std::cout << "Do you want to save the shopping list to the database? (Y/N) ";
-    std::string answer;
-    std::getline(std::cin, answer);
-    if (answer == "Y" || answer == "y") {
-        rc = sqlite3_open("bookstore.db", &db);
-        if (rc != SQLITE_OK) {
-            std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
-            return;
-        }
-
-        // Delete the existing shopping list.
-        sql = "DELETE FROM shoppingList";
-        rc = sqlite3_exec(db, sql, nullptr, nullptr, nullptr);
-        if (rc != SQLITE_OK) {
-            std::cerr << "Error deleting shopping list: " << sqlite3_errmsg(db) << std::endl;
-            sqlite3_close(db);
-            return;
-        }
-
-        // Insert the new shopping list.
-        for (const Book& book : books) {
-            char* errorMessage = nullptr;
-            std::string sql = "INSERT INTO shoppingList (ISBN, [Book-Title], [Book-Author], [Year-Of-Publisher], Publisher, MSRP, Quantity, Description) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-            rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, NULL);
-            if (rc != SQLITE_OK) {
-                std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
-                sqlite3_finalize(stmt);
-                sqlite3_close(db);
-                return;
-            }
-
-            sqlite3_bind_text(stmt, 1, book.ISBN.c_str(), -1, SQLITE_STATIC);
-            sqlite3_bind_text(stmt, 2, book.title.c_str(), -1, SQLITE_STATIC);
-            sqlite3_bind_text(stmt, 3, book.author.c_str(), -1, SQLITE_STATIC);
-            sqlite3_bind_int(stmt, 4, book.year);
-            sqlite3_bind_text(stmt, 5, book.publisher.c_str(), -1, SQLITE_STATIC);
-            sqlite3_bind_int(stmt, 6, book.MSRP);
-            sqlite3_bind_int(stmt, 7, book.quantity);
-            sqlite3_bind_text(stmt, 8, book.description.c_str(), -1, SQLITE_STATIC);
-
-            rc = sqlite3_step(stmt);
-            if (rc != SQLITE_DONE) {
-                std::cerr << "Error inserting book into shopping list: " << sqlite3_errmsg(db) << std::endl;
-                sqlite3_finalize(stmt);
-                sqlite3_close(db);
-                return;
-            }
-
-            sqlite3_finalize(stmt);
-        }
-
-        // Close the database.
-        sqlite3_close(db);
-
-        std::cout << std::endl << "Shopping list saved." << std::endl;
-    }
-}
 
 
 
@@ -152,7 +128,7 @@ void Shopping::addShopperHandler() {
 }
 
 
-void Shopping::addBookToShoppingList(const Shopping& item) {
+void Shopping::addBookToShoppingList(const Shopping& book, int quantity) {
     // Open the database.
     sqlite3* db;
     int rc = sqlite3_open("bookstore.db", &db);
@@ -161,10 +137,8 @@ void Shopping::addBookToShoppingList(const Shopping& item) {
         return;
     }
 
-    //Check database for 
-
     // Insert the new book to the shopping list.
-    const char* sql = "INSERT INTO shoppingList (ISBN, [Book-Title], [Book-Author], MSRP, Quantity) VALUES (?, ?, ?, ?, ?;";
+    const char* sql = "INSERT INTO shoppingList (ISBN, [Book-Title], [Book-Author], MSRP, Quantity) VALUES (?, ?, ?, ?, ?)";
     sqlite3_stmt* stmt;
     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
@@ -174,12 +148,11 @@ void Shopping::addBookToShoppingList(const Shopping& item) {
         return;
     }
 
-    sqlite3_bind_text(stmt, 1, item.ISBN.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 2, item.title.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_text(stmt, 3, item.author.c_str(), -1, SQLITE_STATIC);
-    sqlite3_bind_double(stmt, 4, item.MSRP);
-    sqlite3_bind_int(stmt, 5, item.quantity);
-
+    sqlite3_bind_text(stmt, 1, book.ISBN.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 2, book.title.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_text(stmt, 3, book.author.c_str(), -1, SQLITE_STATIC);
+    sqlite3_bind_double(stmt, 4, book.MSRP);
+    sqlite3_bind_int(stmt, 5, quantity);
 
     rc = sqlite3_step(stmt);
     if (rc != SQLITE_DONE) {
@@ -198,6 +171,9 @@ void Shopping::addBookToShoppingList(const Shopping& item) {
 
 
 void Shopping::addToShoppingListHandler() {
+
+
+
     // Open the database.
     sqlite3* db;
     int rc = sqlite3_open("bookstore.db", &db);
@@ -205,34 +181,33 @@ void Shopping::addToShoppingListHandler() {
         std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
         return;
     }
-
     // Execute a SELECT statement to retrieve the book data sorted by price.
-    std::vector<Book> books;
-    const char* sql = "SELECT * FROM books ORDER BY MSRP";
+    std::vector<Shopping> books;
+    const char* sql = "SELECT ISBN, [Book-Title], [Book-Author], MSRP, Quantity FROM books ORDER BY MSRP";
     sqlite3_stmt* stmt;
     rc = sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
     if (rc != SQLITE_OK) {
         std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
-        sqlite3_finalize(stmt);
         sqlite3_close(db);
         return;
     }
- 
-    // Iterate through the results and populate the books vector.
     while (sqlite3_step(stmt) == SQLITE_ROW) {
-        Book book;
+        Shopping book;
         book.ISBN = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
         book.title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
         book.author = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        book.year = sqlite3_column_int(stmt, 3);
-        book.publisher = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
-        book.MSRP = sqlite3_column_double(stmt, 5);
-        book.quantity = sqlite3_column_int(stmt, 6);
+        book.MSRP = sqlite3_column_double(stmt, 3);
+        book.quantity = sqlite3_column_int(stmt, 4);
         books.push_back(book);
     }
 
     // Finalize the statement and close the database.
-    sqlite3_finalize(stmt);
+    if (stmt != nullptr) {
+        rc = sqlite3_finalize(stmt);
+        if (rc != SQLITE_OK) {
+            std::cerr << "Error finalizing statement: " << sqlite3_errmsg(db) << std::endl;
+        }
+    }
     sqlite3_close(db);
 
     // Display the books.
@@ -240,25 +215,24 @@ void Shopping::addToShoppingListHandler() {
         std::cout << "No books found." << std::endl;
         return;
     }
-    std::cout << "ISBN\tTitle\tAuthor\tPrice\tQuantity" << std::endl;
-    for (const Book& book : books) {
-        std::cout << book.ISBN << '\t' << book.title << '\t' << book.author << '\t'
-            << book.MSRP << '\t' << book.quantity << std::endl;
-    }
-
 
     // Prompt the user to select books and add them to the shopping list.
     std::string answer;
-    std::vector<Shopping> selectedBooks;
     do {
         std::cout << "Enter the ISBN of the book you want to add to the shopping list: ";
         std::string ISBN;
         std::getline(std::cin, ISBN);
 
+        // Check if ISBN is not empty
+        if (ISBN.empty()) {
+            std::cerr << "ISBN cannot be empty." << std::endl;
+            continue;
+        }
+
         // Search for the book with the specified ISBN.
-        Book selectedBook;
+        Shopping selectedBook;
         bool foundBook = false;
-        for (const Book& book : books) {
+        for (const Shopping& book : books) {
             if (book.ISBN == ISBN) {
                 selectedBook = book;
                 foundBook = true;
@@ -271,20 +245,27 @@ void Shopping::addToShoppingListHandler() {
             std::cout << "Enter the quantity of the book you want to add to the shopping list: ";
             int quantity;
             std::cin >> quantity;
+            if (!std::cin) {
+                std::cin.clear();
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                std::cerr << "Error reading input." << std::endl;
+                return;
+            }
+
+            std::cin.ignore();  // Ignore the newline character left by cin.
 
             // Add the selected book to the shopping list.
-            Shopping item;
-            item.ISBN = selectedBook.ISBN;
-            item.title = selectedBook.title;
-            item.quantity = quantity;
-            addBookToShoppingList(item);
+            addBookToShoppingList(selectedBook, quantity);
         }
         else {
             std::cout << "Book not found." << std::endl;
-        }    // Ask the user if they want to select another book.
+        }
+
+        // Ask the user if they want to select another book.
         std::cout << "Do you want to select another book? (Y/N) ";
         std::getline(std::cin, answer);
     } while (answer == "Y" || answer == "y");
+
 }
 
 
