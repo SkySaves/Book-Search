@@ -1,2 +1,3 @@
-﻿  Shopping.cpp
+﻿  Books.cpp
+C:\Users\sande\Desktop\Book-Search-Beta\Books.cpp(118,22): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'double', possible loss of data
   Book Seach.vcxproj -> C:\Users\sande\Desktop\Book-Search-Beta\x64\Debug\Book Seach.exe

@@ -4,6 +4,9 @@
 #define SHOPPING
 
 #include "Login.h"
+#include <iomanip>
+#include <sstream>
+#include <numeric>
 
 
 class Shopping
@@ -16,9 +19,10 @@ class Shopping
 		std::string ISBN;
 		std::string description;
 		std::string bookTitle, bookAuthor, bookISBN, bookPublisher, bookDescription;
-		int year;
+		std::string year;
 		double MSRP;
-		int bookYear, bookMSRP, bookQuantity;
+		int bookYear, bookQuantity;
+		double bookMSRP;
 		std::string name;
 		std::string email;
 		double totalAmountSpent;
@@ -39,7 +43,13 @@ class Shopping
 		void addShopper(std::string name, std::string email, double totalAmountSpent);
 
 		void addShopperHandler();
+
 		void addBookToShoppingList(const Shopping& book, int quantity);
+
+		void displayShoppingList();
+		void checkout();
+
+
 
 };
 
