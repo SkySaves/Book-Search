@@ -1,6 +1,6 @@
 # Book-Search
 Book search program for CIS 227
-Changes:Updated the entire projhect to be more object-oriented, more classes and such.
+Changes:Updated the entire project to be more object-oriented, more classes and such.
 
 
 
