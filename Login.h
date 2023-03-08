@@ -1,36 +1,67 @@
+#pragma once
+
+#ifndef LOGINHEADER
+#define LOGINHEADER
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
+#include <sstream>
+#include "md5.h"
+#include "sqlite3.h"
+#include <conio.h>
+#include "Books.h"
+#include "MenuSystem.h"
+#include "Shopping.h"
+#include "Handlers.h"
+
 using namespace std;
 
-//This function reads the "login.csv" file and checks if the entered username and password match any of the usernames and passwords in the file.
-//The file is read line by line and each line is split into the username and password using the "find" and "substr" string functions.
-//If a match is found, the function returns true, otherwise it returns false.
+static sqlite3_stmt* stmt2;
 
-bool userLogin(string username, string password) {
+class Login
+{
+private:
 
-	// Opens the file `login.csv`
-	ifstream loginFile("login.csv");
-	string line;
+    std::string password;
+    char c;
+    string username;
+    string tryAgain;
 
-	// Reads each line of the file
-	while (getline(loginFile, line)) {
-
-		// Finds the comma in the line
-		int i = line.find(",");
-
-		// Extracts the username and password from the line
-		string user = line.substr(0, i);
-		string pass = line.substr(i + 1);
-
-		// If the extracted username and password match the provided `username` and `password`, the function returns `true`
-		if (user == username && pass == password) {
-			return true;
-		}
-	}
-
-	// If the loop completes without finding a matching `username` and `password`, the function returns `false`
-	return false;
-}
+    // Declare variables to store admin login information and a retry prompt.
+    string adminUsername;
+    string adminPassword;
+    string oldPassword;
+    string newPassword;
+    string adminTryAgain = "y";
 
 
+public:
+    bool userExists(std::string username);
+
+    std::string readPassword();
+
+    bool userLogin(string username, string password);
+
+//This function takes in the username and password from the user and checks if the user exists in the database, then returns true or false.
+    bool adminLogin(string adminUsername, string adminPassword);
+
+    int authUserHandler();
+
+    void registrationHandle();
+
+    int adminLoginHandler();
+
+    void changeCustomerPasswordHandler();
+
+    void changeCustomerPassword();
+
+    void changeAdminPasswordHandler();
+
+    void importFilesHandler();
+};
+
+
+#endif

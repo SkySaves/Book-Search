@@ -108,6 +108,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>sqlite3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,12 +128,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Books.cpp" />
+    <ClCompile Include="Handlers.cpp" />
+    <ClCompile Include="Login.cpp" />
+    <ClCompile Include="MenuSystem.cpp" />
+    <ClCompile Include="Shopping.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Books.h" />
+    <ClInclude Include="Fill.h" />
+    <ClInclude Include="Handlers.h" />
     <ClInclude Include="Login.h" />
+    <ClInclude Include="md5.h" />
     <ClInclude Include="MenuSystem.h" />
+    <ClInclude Include="Shopping.h" />
+    <ClInclude Include="sqlite3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

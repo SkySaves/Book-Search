@@ -1,9 +1,14 @@
+#pragma once
+
+#ifndef MENU
+#define MENU
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <tuple>
 #include <limits>
+#include "Login.h"
 
 /* ----------------- METHODS ----------------- */
 
@@ -11,7 +16,7 @@
 // saferCin is a function that takes a string or int reference as an argument and prompts the user for input.
 // It uses the standard cin input stream to retrieve the input, but with the addition of ignoring any excess characters in the input buffer after the desired input has been retrieved.
 
-void saferCin(std::string& input)
+static void saferCin(std::string& input)
 {
     // Prompts the user for input and stores it in the input string reference.
     std::cin >> input;
@@ -19,7 +24,7 @@ void saferCin(std::string& input)
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-void saferCin(int& input)
+static void saferCin(int& input)
 {
     // Prompts the user for input and stores it in the input int reference.
     std::cin >> input;
@@ -41,6 +46,9 @@ private:
     std::string title;
 
 public:
+
+    Menu() {}
+
     // Constructor that takes in the title of the menu as a parameter.
     Menu(std::string title)
     {
@@ -96,4 +104,31 @@ public:
             choice = std::get<1>(options[choice - 1]);
         }
     }
+
+
+    void getChoice()
+    {
+		int choice;
+		std::cout << "Enter your choice: ";
+		saferCin(choice);
+
+        if (choice < 1 || choice > options.size())
+        {
+			std::cout << "Invalid choice. Try again.";
+		}
+        else
+        {
+			choice = std::get<1>(options[choice - 1]);
+		}
+	}
+
+
+
+    void displayMainMenu();
+    void displayLoginMenu();
+    void adminMenu();
+
+
 };
+
+#endif

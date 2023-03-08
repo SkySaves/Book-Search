@@ -1,13 +1,3 @@
-﻿  Source.cpp
-C:\Users\sande\source\repos\SkySaves\Book-Search\Login.h(20,25): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(73,32): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(74,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(75,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(76,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(77,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(134,22): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'double', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(324,32): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(325,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(326,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\sande\source\repos\SkySaves\Book-Search\Books.h(327,40): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  Book Seach.vcxproj -> C:\Users\sande\source\repos\SkySaves\Book-Search\x64\Debug\Book Seach.exe
+﻿  Books.cpp
+C:\Users\sande\Desktop\Book-Search-Beta\Books.cpp(118,22): warning C4244: 'initializing': conversion from 'unsigned __int64' to 'double', possible loss of data
+  Book Seach.vcxproj -> C:\Users\sande\Desktop\Book-Search-Beta\x64\Debug\Book Seach.exe
