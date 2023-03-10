@@ -60,7 +60,7 @@ void Menu::adminMenu() {
 void Menu::displayLoginMenu() {
     Book userbook;
     // ISDEV is a macro that is defined to skip the login prompt if set to 1.
-#define ISDEV 0
+#define ISDEV 1
 
 
     // If ISDEV is not set to 1, the user is prompted to enter their login information.
@@ -111,9 +111,9 @@ void Menu::displayLoginMenu() {
 void Menu::displayMainMenu() {
 
 
-// Creates an instance of a class named "Handler".
-    /*Handler Handles;*/
-    // Creates an instance of a class named "Shopping".
+    // Creates an instance of a class named "Handler".
+        /*Handler Handles;*/
+        // Creates an instance of a class named "Shopping".
     Shopping shoppings;
     // Creates an instance of a class named "Book".
     Book bookss;
@@ -156,7 +156,6 @@ void Menu::displayMainMenu() {
             break;
         case 2:
             std::cout << "Loading..." << endl;
-
             // Calls the addBookHandler function to add a book to the database.
             shoppings.addToShoppingListHandler();
             break;
@@ -166,7 +165,8 @@ void Menu::displayMainMenu() {
             break;
         case 4:
             shoppings.addShopperHandler();
-
+            // Added Missing Break -Zane
+            break;
         case 5:
             // Exits the program.
             exit(0);

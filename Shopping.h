@@ -48,6 +48,7 @@ class Shopping
 
 		void displayShoppingList();
 		void checkout();
+		void removeItemFromShoppingList(std::string& isbn);
 
 
 

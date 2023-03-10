@@ -1,6 +1,7 @@
 #include "Books.h"
-
-
+#include "MenuSystem.h"
+#include <regex>
+#include <string>
 
 
 void Book::readBooks() {
@@ -443,34 +444,34 @@ void Book::deleteBook() {
 
 void Book::removeFromList() {
     string ISBN = getISBN();
-        int index = -1;
-        // Search bookList for the specified ISBN
-        for (int i = 0; i < bookList.size(); i++)
+    int index = -1;
+    // Search bookList for the specified ISBN
+    for (int i = 0; i < bookList.size(); i++)
+    {
+        if (bookList[i].ISBN == ISBN)
         {
-            if (bookList[i].ISBN == ISBN)
-            {
-                index = i;
-                break;
-            }
+            index = i;
+            break;
         }
-        // Remove book if it's found in the list
-        if (index != -1)
+    }
+    // Remove book if it's found in the list
+    if (index != -1)
+    {
+        bookList.erase(bookList.begin() + index);
+        cout << "Book removed from list" << endl;
+    }
+    // If the book is not found in the list, prompt the user to try again
+    else
+    {
+        cout << "Book not found in list" << endl;
+        cout << "Try again? (y/n): ";
+        char choice;
+        cin >> choice;
+        if (choice == 'y')
         {
-            bookList.erase(bookList.begin() + index);
-            cout << "Book removed from list" << endl;
+            removeFromList();
         }
-        // If the book is not found in the list, prompt the user to try again
-        else
-        {
-            cout << "Book not found in list" << endl;
-            cout << "Try again? (y/n): ";
-            char choice;
-            cin >> choice;
-            if (choice == 'y')
-            {
-                removeFromList();
-            }
-        }
+    }
 }
 
 void Book::addToList() {
@@ -621,26 +622,36 @@ void Book::addBookHandler() {
 }
 
 
-
-
-
-
 void Book::addShopperHandler() {
+    Shopping shopping;
 
-    Shopping shoppingg;
+    std::regex emailRegex("([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)");
+    std::regex nameRegex("[a-zA-Z]+");
+    std::regex totalAmountSpentRegex("[0-9]+");
+
     std::cout << "Enter the shopper's name: ";
-    std::cin >> name;
+    saferCin(name);
+    while (std::regex_search(name, nameRegex)) {
+        std::cout << "Invalid name. Please try again: ";
+        saferCin(name);
+    }
+
     std::cout << "Enter the shopper's email: ";
-    std::cin >> email;
+    saferCin(email);
+    while (std::regex_search(email, emailRegex)) {
+        std::cout << "Invalid Email. Please try again";
+        saferCin(email);
+    }
+
     std::cout << "Enter the shopper's total amount spent: ";
-    std::cin >> totalAmountSpent;
+    saferCin(totalAmountSpent);
+    while (std::regex_search(std::to_string(totalAmountSpent), totalAmountSpentRegex)) {
+        std::cout << "Invalid total amount spent. Please try again";
+        saferCin(totalAmountSpent);
+    }
 
-    shoppingg.addShopper(name, email, totalAmountSpent);
+    shopping.addShopper(name, email, totalAmountSpent);
 }
-
-
-
-
 
 
 void Book::searchBookHandler() {
