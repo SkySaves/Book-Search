@@ -32,6 +32,13 @@ static void saferCin(int& input)
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
+static void pressEnter() {
+    // Probably un-nessicary but oh well
+    std::cin.get();
+}
+
+
+
 
 /* ---------------- CLASSES ---------------- */
 

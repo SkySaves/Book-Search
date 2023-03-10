@@ -1,5 +1,9 @@
 #include "Shopping.h"
+#include <string>
+#include <regex>
+#include <iostream>
 
+#define TODO_LATER std::cout << "NOT IMPLEMENTED" << std::endl; system("pause");
 
 //void Shopping::addToShoppingList() {
 //    // Open the database.
@@ -181,32 +185,43 @@ void Shopping::addShopper(std::string name, std::string email, double totalAmoun
 
 
 void Shopping::addShopperHandler() {
+    // Added integ checks for adding shoppers
 
     double totalAmountSpent;
 
+    std::regex emailRegex("([a-zA-Z0-9_\\-\\.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([a-zA-Z0-9\\-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\\]?)");
+    std::regex nameRegex("[a-zA-Z]+");
+    std::regex totalAmountSpentRegex("[0-9]+");
+
     std::cout << "Enter the shopper's name: ";
-    std::cin >> name;
+    saferCin(name);
+    while (!std::regex_search(name, nameRegex)) {
+        std::cout << "Invalid name. Please try again\n";
+        saferCin(name);
+    }
+
     std::cout << "Enter the shopper's email: ";
-    std::cin >> email;
+    saferCin(email);
+    while (!std::regex_search(email, emailRegex)) {
+        std::cout << "Invalid Email. Please try again\n";
+        saferCin(email);
+    }
+
     std::cout << "Enter the shopper's total amount spent: ";
-    std::cin >> totalAmountSpent;
+    saferCin(totalAmountSpent);
+    while (!std::regex_search(std::to_string(totalAmountSpent), totalAmountSpentRegex)) {
+        std::cout << "Invalid total amount spent. Please try again\n";
+        saferCin(totalAmountSpent);
+    }
 
     addShopper(name, email, totalAmountSpent);
 
+
+    // Removed recusive call to main menu
+    // Being handled by the original menu now
     std::cout << std::endl << "Shopper added." << std::endl;
-
-    // Loop until user chooses to return to the main menu
-    while (true) {
-        std::cout << "Press any key to return to menu...";
-        std::cin.ignore();
-        std::cin.get();
-
-        // Display main menu
-        Menu mainM2("Main Menu");
-        mainM2.displayMainMenu();
-
-
-    }
+    std::cout << "Press Enter to Continue" << std::endl;
+    pressEnter();
 }
 
 
@@ -335,7 +350,8 @@ void Shopping::addToShoppingListHandler() {
     do {
         std::cout << "Enter the ISBN of the book you want to add to the shopping list: ";
         std::string ISBN;
-        std::getline(std::cin, ISBN); // Get the ISBN value from the user.
+        saferCin(ISBN); // Get the ISBN value from the user.
+
 
         // Check if ISBN is not empty
         if (ISBN.empty()) { // If the user did not enter an ISBN, print an error message and continue the loop.
@@ -359,16 +375,7 @@ void Shopping::addToShoppingListHandler() {
             // Ask the user how many copies of the book they want to add to the shopping list.
             std::cout << "Enter the quantity of the book you want to add to the shopping list: ";
             int quantity;
-            std::cin >> quantity;
-            if (!std::cin) {
-                // If there was an error reading the input, clear the error state and ignore the rest of the input.
-                std::cin.clear();
-                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                std::cerr << "Error reading input." << std::endl;
-                return;
-            }
-
-            std::cin.ignore();  // Ignore the newline character left by cin.
+            saferCin(quantity);
 
             // Add the selected book to the shopping list.
             addBookToShoppingList(selectedBook, quantity);
@@ -379,11 +386,78 @@ void Shopping::addToShoppingListHandler() {
 
         // Ask the user if they want to select another book.
         std::cout << "Do you want to select another book? (Y/N) ";
-        std::getline(std::cin, answer);
+        saferCin(answer);
     } while (answer == "Y" || answer == "y");
 
 }
 
+void Shopping::clearShoppingList() {
+    sqlite3* db;
+
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    std::string sql = "DELETE FROM shoppingList";
+    sqlite3_stmt* stmt;
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        std::cerr << "Error deleting shopping list: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    std::cout << "Shopping list cleared." << std::endl;
+    std::cout << "Press Enter to continue..." << std::endl;
+    pressEnter();
+
+}
+
+void Shopping::removeItemFromShoppingList(string& isbn) {
+    sqlite3* db;
+
+    int rc = sqlite3_open("bookstore.db", &db);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        return;
+    }
+
+    std::string sql = "DELETE FROM shoppingList WHERE ISBN=" + isbn;
+    sqlite3_stmt* stmt;
+    rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+    if (rc != SQLITE_OK) {
+        std::cerr << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    rc = sqlite3_step(stmt);
+    if (rc != SQLITE_DONE) {
+        std::cerr << "Error deleting row: " << sqlite3_errmsg(db) << std::endl;
+        sqlite3_close(db);
+        return;
+    }
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
+
+    std::cout << "Item removed from shopping list.\n";
+    std::cout << "Press enter to continue...";
+    pressEnter();
+
+}
 
 void Shopping::displayShoppingList() {
     sqlite3* db;
@@ -402,31 +476,88 @@ void Shopping::displayShoppingList() {
         return;
     }
 
-    std::cout << "Shopping List:\n";
-    std::cout << "ISBN\t\tTitle\t\t\tAuthor\t\t\tMSRP\tQuantity\n";
+    // Store Menu items for while loop -Zane
+    std::vector<std::tuple<std::string, std::string, std::string, double, int>> books;
+
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         std::string isbn = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
         std::string title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
         std::string author = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
         double msrp = sqlite3_column_double(stmt, 3);
         int quantity = sqlite3_column_int(stmt, 4);
-        std::cout << isbn << "\t" << title << "\t\t" << author << "\t\t" << msrp << "\t" << quantity << "\n";
+        books.push_back(std::make_tuple(isbn, title, author, msrp, quantity));
     }
 
     sqlite3_finalize(stmt);
     sqlite3_close(db);
 
-    // Prompt the user to add a book to the list or checkout.
-    char answer;
-    std::cout << "Would you like to add a book to the shopping list or checkout? (a/c): ";
-    std::cin >> answer;
+    // Added Menu System and refined control flow - Zane
 
-    if (answer == 'a') {
-        this->addToShoppingListHandler();
+    Menu checkMenu{ "Shopping List Menu" };
+    checkMenu.addOption("Add Book", 1);
+    checkMenu.addOption("Remove Book", 2);
+    checkMenu.addOption("Clear List", 3);
+    checkMenu.addOption("Checkout", 4);
+    checkMenu.addOption("Exit", 5);
+
+    while (true) {
+        std::string loc_isbn;
+        std::string clearList_choice;
+        int choice;
+
+        std::cout << "ISBN\t\tTitle\t\t\tAuthor\t\t\tMSRP\tQuantity\n";
+        for (int i = 0; i < books.size(); i++) {
+            std::cout << std::get<0>(books[i]) << "\t"
+                << std::get<1>(books[i]) << "\t\t"
+                << std::get<2>(books[i]) << "\t\t"
+                << std::get<3>(books[i]) << "\t"
+                << std::get<4>(books[i]) << "\n";
+        }
+
+        checkMenu.display();
+        checkMenu.getChoice(choice, "What to do with your list: ");
+
+        switch (choice) {
+        case 1:
+            // I think this is just a long function,
+            // The vector asignment and sql statements and integrety checking just takes a long time i think.
+            // Any way all this to say I didnt see any obvious way to make it faster :( -Zane
+            this->addToShoppingListHandler();
+            break;
+
+        case 2:
+            std::cout << "Please enter 10-13 digit ISBN: ";
+            saferCin(loc_isbn);
+            this->removeItemFromShoppingList(loc_isbn);
+
+            break;
+
+        case 3:
+            std::cout << "Are you sure you want to clear your list?" << std::endl;
+            std::cout << "(Y/N): ";
+            saferCin(clearList_choice);
+
+            if (clearList_choice == "Y" || clearList_choice == "y") {
+                // This has introduced a new bug where the list doesnt update on remove now
+                // Something about passing the db reference and updating it all in one statement to fix it -Zane
+                this->clearShoppingList();
+            }
+
+            break;
+
+        case 4:
+            this->checkout();
+            break;
+
+        case 5:
+            std::cout << "Returning to main menu..." << std::endl;
+            return;
+
+        default:
+            break;
+        }
     }
-    else if (answer == 'c') {
-        this->checkout();
-    }
+
 }
 
 void Shopping::checkout() {
@@ -548,8 +679,13 @@ void Shopping::checkout() {
 
     sqlite3_close(db);
     std::cout << "Checkout completed. Receipt saved to receipt.txt." << std::endl;
-   //get input from user to continue
+    //get input from user to continue
     std::cout << "Press any key to continue: ";
     std::cin.get();
     std::cin.ignore();
-	}
+
+    // Clear the shopping list.
+    // That should be it to add the clear functionality
+    // - Zane
+    //clearShoppingList();
+}
