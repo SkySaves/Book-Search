@@ -29,6 +29,3 @@ Contributions to the Book-Search project are welcome. Please feel free to fork t
 - Implementing integrity checks for user inputs.
 - Optimizing the loading time and fixing display issues in the shopping list feature.
 - Adding functionality to clear the shopping list after checkout.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/SkySaves/Book-Search/blob/main/LICENSE) file for details.
