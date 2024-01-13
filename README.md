@@ -1,10 +1,34 @@
 # Book-Search
-Book search program for CIS 227
-Changes:Updated the entire project to be more object-oriented, more classes and such.
+
+## Overview
+Book-Search is a comprehensive book management system, primarily designed for educational purposes in a CIS 227 project. The application is developed in C++ and utilizes SQLite for database management. It offers a range of features including book searching, shopping list management, and user authentication.
+
+## Features
+- **Book Management**: Allows users to search, add, and delete books in the database.
+- **Shopping List**: Users can manage their shopping list by adding or removing books.
+- **User Authentication**: Secure login system for users.
+- **Database Integration**: Utilizes SQLite for efficient data handling.
+- **Object-Oriented Approach**: The project is updated to be more object-oriented, enhancing readability and maintainability.
+
+## Installation
+To run the Book-Search program, clone the repository and compile the source code using a C++ compiler that supports C++17 or later. Ensure SQLite is properly set up in your environment.
 
 
+## Usage
+After compiling the program, run the executable to start the application. Follow the on-screen prompts to navigate through the application.
 
-TODO:
-1. Does not do any integrity checks for shopper’s email, name, total spent when creating a shopper’s account. This could potentially cause issues.
-2. There is a slight delay in the view shopping list and select the add book to list. Then once it does finally load, it brings up the main menu after flashing text that doesn’t belong there.
-3. There is no way to clear the books from the shopping list right now, and checking out with the books does not clear the list either.
+## Contributing
+Contributions to the Book-Search project are welcome. Please feel free to fork the repository, make changes, and submit pull requests.
+
+## Known Issues
+- Lack of integrity checks for shopper's account creation.
+- Delay in loading the shopping list and occasional display glitches.
+- Inability to clear books from the shopping list after checkout.
+
+## Future Enhancements
+- Implementing integrity checks for user inputs.
+- Optimizing the loading time and fixing display issues in the shopping list feature.
+- Adding functionality to clear the shopping list after checkout.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE.md](https://github.com/SkySaves/Book-Search/blob/main/LICENSE) file for details.
